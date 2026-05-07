@@ -1,0 +1,2736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Ride It</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+
+:root{
+  --red:#E8251A;
+  --red2:#FF3B30;
+  --red-light:#FEE9E8;
+  --red-dark:#C41E14;
+  --bg:#FFFFFF;
+  --surface:#F7F8FA;
+  --surface2:#EDEEF2;
+  --border:#E4E6EB;
+  --text:#111318;
+  --text2:#555B6A;
+  --text3:#8C92A4;
+  --green:#16A34A;
+  --green-light:#DCFCE7;
+  --yellow:#F59E0B;
+  --blue:#2563EB;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08);
+  --shadow-md:0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.13);
+  --shadow-xl:0 20px 50px rgba(0,0,0,.18);
+  --r4:4px;--r8:8px;--r12:12px;--r16:16px;--r20:20px;--r99:999px;
+  --font:'Outfit',sans-serif;
+  --font2:'Space Grotesk',sans-serif;
+  --phone-w:390px;
+  --phone-h:844px;
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  background:#0f0f14;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--font);
+  overflow:hidden;
+}
+
+/* ─── Android Phone Shell ─── */
+.android-shell{
+  width:var(--phone-w);
+  height:var(--phone-h);
+  background:#1a1a22;
+  border-radius:46px;
+  position:relative;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.06),
+    0 0 0 9px #111117,
+    0 0 0 11px rgba(255,255,255,.04),
+    0 30px 80px rgba(0,0,0,.7),
+    0 10px 30px rgba(232,37,26,.08);
+  flex-shrink:0;
+}
+
+/* Camera punch hole */
+.punch-hole{
+  position:absolute;
+  top:14px;left:50%;
+  transform:translateX(-50%);
+  width:12px;height:12px;
+  background:#0a0a0f;
+  border-radius:50%;
+  z-index:1000;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.08);
+}
+
+/* Side buttons */
+.side-vol{
+  position:absolute;
+  left:-3px;
+  background:#111117;
+  border-radius:3px 0 0 3px;
+}
+.side-vol.up{top:130px;width:4px;height:36px;}
+.side-vol.dn{top:180px;width:4px;height:36px;}
+.side-power{
+  position:absolute;
+  right:-3px;top:160px;
+  width:4px;height:52px;
+  background:#111117;
+  border-radius:0 3px 3px 0;
+}
+
+/* Screen */
+.phone-screen{
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  border-radius:46px;
+  overflow:hidden;
+  background:var(--bg);
+}
+
+/* Status bar */
+.status-bar{
+  height:36px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px 24px 0;
+  font-size:12px;
+  font-weight:700;
+  color:var(--text);
+  font-family:var(--font2);
+  flex-shrink:0;
+  position:relative;
+  z-index:50;
+}
+.status-bar.light{color:white;}
+.status-icons{display:flex;gap:5px;align-items:center;}
+.status-icons svg{width:15px;height:15px;}
+
+/* ─── Screens ─── */
+.screen{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  background:var(--bg);
+  overflow:hidden;
+  opacity:0;
+  pointer-events:none;
+  transform:translateX(30px);
+  transition:opacity .28s ease,transform .28s ease;
+}
+.screen.active{
+  opacity:1;
+  pointer-events:all;
+  transform:translateX(0);
+}
+.screen.slide-back{transform:translateX(-30px);}
+
+.scroll-body{
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+.scroll-body::-webkit-scrollbar{display:none;}
+
+/* ─── Bottom Nav ─── */
+.bottom-nav{
+  height:78px;
+  background:var(--bg);
+  border-top:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  padding:0 6px 14px;
+  flex-shrink:0;
+  position:relative;
+  z-index:40;
+}
+.nav-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;padding:6px 10px;border-radius:var(--r12);
+  transition:all .18s;flex:1;
+  user-select:none;
+}
+.nav-item span{font-size:10px;font-weight:600;color:var(--text3);}
+.nav-item svg{width:22px;height:22px;color:var(--text3);}
+.nav-item.active svg{color:var(--red);}
+.nav-item.active span{color:var(--red);}
+.nav-center{
+  position:relative;flex:1;
+  display:flex;flex-direction:column;align-items:center;cursor:pointer;
+  user-select:none;
+}
+.nav-fab{
+  width:52px;height:52px;
+  background:linear-gradient(135deg,var(--red2),var(--red-dark));
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 18px rgba(232,37,26,.45);
+  margin-top:-26px;
+  border:3px solid white;
+  transition:transform .18s,box-shadow .18s;
+}
+.nav-fab:active{transform:scale(.93);}
+.nav-fab svg{width:22px;height:22px;color:white;}
+.nav-center span{font-size:10px;font-weight:600;color:var(--text3);margin-top:4px;}
+
+/* ══════════════════════════════════
+   SPLASH
+══════════════════════════════════ */
+#splash{
+  background:linear-gradient(160deg,#0f0f14 0%,#1a0d0d 40%,#220808 100%);
+  align-items:center;
+  justify-content:center;
+  gap:0;
+}
+.splash-logo{
+  display:flex;flex-direction:column;align-items:center;
+  animation:splashIn .6s ease both;
+}
+.splash-icon{
+  width:88px;height:88px;
+  background:linear-gradient(135deg,var(--red2),var(--red-dark));
+  border-radius:28px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 32px rgba(232,37,26,.5),0 0 60px rgba(232,37,26,.15);
+  margin-bottom:20px;
+}
+.splash-icon svg{width:48px;height:48px;color:white;}
+.splash-name{
+  font-size:42px;font-weight:900;
+  color:white;letter-spacing:-1.5px;
+  font-family:var(--font);
+}
+.splash-name span{color:var(--red2);}
+.splash-tagline{
+  font-size:14px;color:rgba(255,255,255,.45);
+  margin-top:8px;letter-spacing:.06em;text-transform:uppercase;
+  font-weight:500;
+}
+.splash-loader{
+  margin-top:60px;
+  width:48px;height:3px;
+  background:rgba(255,255,255,.12);
+  border-radius:3px;
+  overflow:hidden;
+}
+.splash-loader-bar{
+  height:100%;
+  background:linear-gradient(90deg,var(--red2),#ff8a80);
+  border-radius:3px;
+  animation:loaderFill 1.6s ease forwards;
+}
+@keyframes splashIn{from{opacity:0;transform:scale(.85) translateY(20px);}to{opacity:1;transform:none;}}
+@keyframes loaderFill{from{width:0;}to{width:100%;}}
+
+/* ══════════════════════════════════
+   HOME
+══════════════════════════════════ */
+.home-header{
+  padding:8px 20px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+}
+.location-chip{
+  display:flex;align-items:center;gap:6px;
+  background:var(--surface);
+  border-radius:var(--r99);
+  padding:7px 12px 7px 8px;
+  cursor:pointer;
+}
+.location-chip svg{width:16px;height:16px;color:var(--red);}
+.loc-label{font-size:10px;color:var(--text3);font-weight:500;display:block;}
+.loc-name{font-size:13px;font-weight:700;color:var(--text);display:block;}
+.loc-arrow{width:14px;height:14px;color:var(--text2);}
+
+.avatar-btn{
+  width:42px;height:42px;
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;color:white;
+  position:relative;cursor:pointer;
+}
+.avatar-dot{
+  position:absolute;top:-1px;right:-1px;
+  width:13px;height:13px;
+  background:var(--red);border-radius:50%;
+  border:2px solid white;
+}
+
+.greeting{padding:14px 20px 0;}
+.greeting p{font-size:13px;color:var(--text3);font-weight:500;}
+.greeting h2{font-size:24px;font-weight:800;color:var(--text);letter-spacing:-.4px;margin-top:2px;}
+.greeting h2 em{color:var(--red);font-style:normal;}
+
+.search-row{padding:16px 20px 0;display:flex;gap:10px;align-items:center;}
+.search-box{
+  flex:1;background:var(--surface);border-radius:var(--r12);
+  display:flex;align-items:center;gap:10px;padding:0 14px;height:48px;
+  border:1.5px solid transparent;transition:border-color .2s;cursor:pointer;
+}
+.search-box:focus-within{border-color:var(--red);}
+.search-box svg{width:18px;height:18px;color:var(--text3);flex-shrink:0;}
+.search-box input{border:none;background:none;outline:none;font-size:14px;color:var(--text);font-family:var(--font);width:100%;}
+.search-box input::placeholder{color:var(--text3);}
+.filter-btn{
+  width:48px;height:48px;background:var(--red);border-radius:var(--r12);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 12px rgba(232,37,26,.35);cursor:pointer;flex-shrink:0;
+  transition:transform .15s;
+}
+.filter-btn:active{transform:scale(.92);}
+.filter-btn svg{width:20px;height:20px;color:white;}
+
+.sec-header{display:flex;justify-content:space-between;align-items:center;padding:20px 20px 12px;}
+.sec-title{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.3px;}
+.see-all{font-size:13px;color:var(--red);font-weight:600;cursor:pointer;}
+
+/* Category pills */
+.cats{display:flex;gap:10px;padding:0 20px;overflow-x:auto;scrollbar-width:none;}
+.cats::-webkit-scrollbar{display:none;}
+.cat{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  flex-shrink:0;cursor:pointer;
+}
+.cat-ico{
+  width:66px;height:66px;border-radius:var(--r16);
+  display:flex;align-items:center;justify-content:center;font-size:28px;
+  background:var(--surface);border:2px solid transparent;transition:all .2s;
+}
+.cat.active .cat-ico{background:var(--red-light);border-color:var(--red);}
+.cat-lbl{font-size:11px;font-weight:700;color:var(--text2);}
+.cat.active .cat-lbl{color:var(--red);}
+
+/* Horizontal scroll */
+.h-scroll{display:flex;gap:14px;padding:0 20px;overflow-x:auto;scrollbar-width:none;}
+.h-scroll::-webkit-scrollbar{display:none;}
+
+/* Vehicle card */
+.v-card{
+  width:200px;background:var(--bg);border-radius:var(--r16);
+  box-shadow:var(--shadow-md);overflow:hidden;flex-shrink:0;
+  cursor:pointer;border:1px solid var(--border);transition:transform .18s,box-shadow .18s;
+}
+.v-card:active{transform:scale(.97);}
+.v-img{width:100%;height:120px;position:relative;overflow:hidden;}
+.v-img-bg{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:52px;
+}
+.bg-blue{background:linear-gradient(135deg,#dbeafe,#bfdbfe);}
+.bg-green{background:linear-gradient(135deg,#dcfce7,#bbf7d0);}
+.bg-orange{background:linear-gradient(135deg,#ffedd5,#fed7aa);}
+.bg-purple{background:linear-gradient(135deg,#f3e8ff,#e9d5ff);}
+.bg-slate{background:linear-gradient(135deg,#f1f5f9,#e2e8f0);}
+.bg-pink{background:linear-gradient(135deg,#fce7f3,#fbcfe8);}
+.v-tag{
+  position:absolute;top:8px;left:8px;
+  background:rgba(0,0,0,.65);color:white;font-size:9px;font-weight:700;
+  padding:3px 8px;border-radius:var(--r99);letter-spacing:.06em;text-transform:uppercase;
+  backdrop-filter:blur(4px);
+}
+.v-fav{
+  position:absolute;top:8px;right:8px;
+  width:28px;height:28px;background:rgba(255,255,255,.9);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);
+  cursor:pointer;transition:transform .15s;
+}
+.v-fav:active{transform:scale(.85);}
+.v-fav svg{width:14px;height:14px;color:var(--red);}
+.v-body{padding:10px 12px 12px;}
+.v-name{font-size:14px;font-weight:800;color:var(--text);margin-bottom:2px;}
+.v-brand{font-size:11px;color:var(--text3);font-weight:500;}
+.v-footer{display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;}
+.v-price .amt{font-size:16px;font-weight:900;color:var(--red);}
+.v-price .per{font-size:10px;color:var(--text3);}
+.v-dist{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--text3);font-weight:500;}
+.v-dist svg{width:11px;height:11px;}
+.stars{display:flex;gap:1px;margin-top:5px;}
+.star{font-size:10px;color:#F59E0B;}
+
+/* Promo banner */
+.promo{
+  margin:20px 20px 0;
+  background:linear-gradient(120deg,#1a0a08,#3d1010);
+  border-radius:var(--r16);
+  padding:18px 18px;
+  display:flex;align-items:center;
+  gap:14px;
+  overflow:hidden;
+  position:relative;
+  cursor:pointer;
+}
+.promo::before{
+  content:'';position:absolute;right:-20px;top:-20px;
+  width:120px;height:120px;
+  background:radial-gradient(circle,rgba(232,37,26,.3),transparent 70%);
+}
+.promo-text .tag{
+  font-size:10px;font-weight:700;color:rgba(255,255,255,.5);
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;
+}
+.promo-text h3{font-size:18px;font-weight:800;color:white;letter-spacing:-.3px;}
+.promo-text p{font-size:12px;color:rgba(255,255,255,.55);margin-top:4px;}
+.promo-badge{
+  margin-left:auto;flex-shrink:0;
+  width:60px;height:60px;
+  background:var(--red);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:900;color:white;
+  box-shadow:0 4px 18px rgba(232,37,26,.5);
+}
+
+/* Nearby wide card */
+.wide-card{
+  display:flex;gap:12px;
+  background:var(--bg);border-radius:var(--r16);
+  border:1px solid var(--border);box-shadow:var(--shadow-sm);
+  padding:12px;cursor:pointer;
+  transition:box-shadow .18s,transform .18s;
+  margin:0 20px 10px;
+}
+.wide-card:active{transform:scale(.98);}
+.wide-img{
+  width:80px;height:80px;border-radius:var(--r12);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:36px;
+}
+.wide-info{flex:1;}
+.wide-name{font-size:15px;font-weight:800;color:var(--text);margin-bottom:2px;}
+.wide-meta{font-size:11px;color:var(--text3);margin-bottom:6px;}
+.wide-footer{display:flex;justify-content:space-between;align-items:center;}
+.wide-price{font-size:15px;font-weight:900;color:var(--red);}
+.wide-price span{font-size:11px;color:var(--text3);font-weight:500;}
+.avail-badge{
+  font-size:10px;font-weight:700;
+  background:var(--green-light);color:var(--green);
+  padding:3px 8px;border-radius:var(--r99);
+}
+
+/* ══════════════════════════════════
+   DETAIL SCREEN
+══════════════════════════════════ */
+.detail-hero{
+  height:260px;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;font-size:90px;
+  flex-shrink:0;
+}
+.detail-back{
+  position:absolute;top:44px;left:16px;
+  width:38px;height:38px;background:rgba(255,255,255,.92);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:var(--shadow-md);z-index:10;
+  transition:transform .15s;
+}
+.detail-back:active{transform:scale(.9);}
+.detail-back svg{width:18px;height:18px;color:var(--text);}
+.detail-fav-btn{
+  position:absolute;top:44px;right:16px;
+  width:38px;height:38px;background:rgba(255,255,255,.92);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:var(--shadow-md);z-index:10;
+  transition:transform .15s;
+}
+.detail-fav-btn:active{transform:scale(.9);}
+.detail-fav-btn svg{width:18px;height:18px;color:var(--red);}
+.detail-tag-wrap{position:absolute;bottom:16px;left:16px;display:flex;gap:8px;}
+.d-tag{
+  padding:5px 12px;border-radius:var(--r99);font-size:11px;font-weight:700;
+  backdrop-filter:blur(8px);
+}
+.d-tag.dark{background:rgba(0,0,0,.65);color:white;}
+.d-tag.green{background:var(--green-light);color:var(--green);}
+
+.detail-body{padding:20px 20px 100px;}
+.d-title-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
+.d-title{font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.4px;}
+.d-price-box{text-align:right;}
+.d-price-amt{font-size:22px;font-weight:900;color:var(--red);}
+.d-price-per{font-size:11px;color:var(--text3);}
+.d-subtitle{font-size:13px;color:var(--text3);margin-bottom:14px;}
+.d-rating-row{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.d-stars{display:flex;gap:2px;}
+.d-stars span{font-size:13px;color:#F59E0B;}
+.d-rating-val{font-size:13px;font-weight:700;color:var(--text);}
+.d-rating-count{font-size:12px;color:var(--text3);}
+.d-dist-pill{
+  display:flex;align-items:center;gap:4px;
+  background:var(--surface);padding:5px 10px;border-radius:var(--r99);
+  font-size:12px;color:var(--text2);font-weight:600;
+  margin-left:auto;
+}
+.d-dist-pill svg{width:13px;height:13px;color:var(--red);}
+
+.spec-grid{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;
+  margin-bottom:20px;
+}
+.spec-item{
+  background:var(--surface);border-radius:var(--r12);
+  padding:12px 10px;text-align:center;
+}
+.spec-ico{font-size:22px;margin-bottom:4px;}
+.spec-val{font-size:13px;font-weight:800;color:var(--text);}
+.spec-key{font-size:10px;color:var(--text3);font-weight:500;margin-top:2px;}
+
+.sec-title2{font-size:15px;font-weight:800;color:var(--text);margin-bottom:12px;letter-spacing:-.2px;}
+
+.date-picker{
+  display:flex;gap:10px;margin-bottom:20px;
+}
+.date-box{
+  flex:1;background:var(--surface);border-radius:var(--r12);
+  padding:12px 14px;border:1.5px solid transparent;
+  transition:border-color .2s;cursor:pointer;
+}
+.date-box.active{border-color:var(--red);background:var(--red-light);}
+.date-box label{font-size:10px;color:var(--text3);font-weight:600;display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.06em;}
+.date-box span{font-size:14px;font-weight:700;color:var(--text);}
+
+.host-row{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface);border-radius:var(--r12);
+  padding:12px 14px;margin-bottom:20px;
+}
+.host-av{
+  width:44px;height:44px;background:linear-gradient(135deg,#667eea,#764ba2);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;color:white;flex-shrink:0;
+}
+.host-info{flex:1;}
+.host-name{font-size:14px;font-weight:700;color:var(--text);}
+.host-meta{font-size:11px;color:var(--text3);}
+.host-badge{
+  background:var(--red-light);color:var(--red);
+  font-size:10px;font-weight:700;padding:4px 10px;border-radius:var(--r99);
+}
+
+.detail-cta{
+  position:absolute;bottom:0;left:0;right:0;
+  background:var(--bg);border-top:1px solid var(--border);
+  padding:16px 20px 28px;display:flex;gap:12px;
+  box-shadow:0 -8px 24px rgba(0,0,0,.08);
+}
+.cta-price{
+  flex:0 0 auto;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.cta-price .amt{font-size:20px;font-weight:900;color:var(--red);}
+.cta-price .lbl{font-size:11px;color:var(--text3);}
+.btn-book{
+  flex:1;background:linear-gradient(135deg,var(--red2),var(--red-dark));
+  color:white;font-size:15px;font-weight:800;
+  border:none;border-radius:var(--r12);height:52px;cursor:pointer;
+  font-family:var(--font);letter-spacing:-.2px;
+  box-shadow:0 4px 18px rgba(232,37,26,.4);
+  transition:transform .15s,box-shadow .15s;
+}
+.btn-book:active{transform:scale(.97);box-shadow:0 2px 10px rgba(232,37,26,.3);}
+
+/* ══════════════════════════════════
+   BOOKING CONFIRM
+══════════════════════════════════ */
+.confirm-header{
+  padding:52px 20px 18px;
+  display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.back-btn{
+  width:38px;height:38px;background:var(--surface);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;
+  transition:transform .15s;
+}
+.back-btn:active{transform:scale(.9);}
+.back-btn svg{width:18px;height:18px;color:var(--text);}
+.confirm-title{font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.3px;}
+
+.booking-card{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--r16);margin:16px 20px 0;
+  overflow:hidden;box-shadow:var(--shadow-sm);
+}
+.booking-card-header{
+  padding:14px 16px;border-bottom:1px solid var(--border);
+  font-size:13px;font-weight:800;color:var(--text);
+}
+.booking-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:11px 16px;border-bottom:1px solid var(--border);
+}
+.booking-row:last-child{border-bottom:none;}
+.b-key{font-size:13px;color:var(--text3);}
+.b-val{font-size:13px;font-weight:700;color:var(--text);text-align:right;}
+.b-val.blue{color:var(--blue);}
+
+.total-banner{
+  background:linear-gradient(135deg,var(--red-dark),#8B0000);
+  margin:14px 20px 0;border-radius:var(--r16);
+  padding:16px 18px;display:flex;justify-content:space-between;align-items:center;
+}
+.total-label{font-size:12px;font-weight:600;color:rgba(255,255,255,.65);margin-bottom:2px;}
+.total-sublabel{font-size:10px;color:rgba(255,255,255,.4);}
+.total-amt{font-size:26px;font-weight:900;color:white;}
+
+.pay-method{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--r12);padding:12px 14px;
+  margin:14px 20px 0;cursor:pointer;
+  transition:border-color .2s;
+}
+.pay-method:hover{border-color:var(--red);}
+.pay-icon{font-size:24px;}
+.pay-info{flex:1;}
+.pay-name{font-size:13px;font-weight:700;color:var(--text);}
+.pay-sub{font-size:11px;color:var(--text3);}
+.pay-arrow{width:16px;height:16px;color:var(--text3);}
+
+.policy-box{
+  margin:12px 20px 0;background:var(--surface);
+  border-radius:var(--r12);padding:12px 14px;
+}
+.policy-box .title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.policy-box .body{font-size:11px;color:var(--text3);line-height:1.6;}
+
+.confirm-cta{
+  padding:16px 20px 28px;flex-shrink:0;
+  border-top:1px solid var(--border);
+  background:var(--bg);
+}
+.btn-confirm{
+  width:100%;background:linear-gradient(135deg,var(--red2),var(--red-dark));
+  color:white;font-size:16px;font-weight:800;letter-spacing:-.2px;
+  border:none;border-radius:var(--r12);height:56px;cursor:pointer;
+  font-family:var(--font);
+  box-shadow:0 4px 18px rgba(232,37,26,.4);
+  transition:transform .15s;
+}
+.btn-confirm:active{transform:scale(.98);}
+.confirm-note{text-align:center;font-size:11px;color:var(--text3);margin-top:10px;}
+
+/* ══════════════════════════════════
+   SUCCESS
+══════════════════════════════════ */
+#success{
+  background:var(--bg);align-items:center;justify-content:center;
+  padding:30px;
+}
+.success-inner{display:flex;flex-direction:column;align-items:center;gap:0;}
+.success-anim{
+  width:100px;height:100px;
+  background:var(--green-light);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:24px;
+  animation:successPop .5s ease .2s both;
+}
+.success-anim svg{width:50px;height:50px;color:var(--green);}
+@keyframes successPop{from{transform:scale(.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+.success-title{font-size:26px;font-weight:900;color:var(--text);text-align:center;margin-bottom:10px;letter-spacing:-.4px;}
+.success-sub{font-size:14px;color:var(--text3);text-align:center;line-height:1.6;max-width:280px;}
+.success-card{
+  width:100%;background:var(--surface);border-radius:var(--r16);
+  padding:18px;margin-top:28px;
+}
+.s-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);}
+.s-row:last-child{border-bottom:none;}
+.s-k{font-size:13px;color:var(--text3);}
+.s-v{font-size:13px;font-weight:700;color:var(--text);}
+.btn-home{
+  width:100%;margin-top:24px;
+  background:linear-gradient(135deg,var(--red2),var(--red-dark));
+  color:white;font-size:15px;font-weight:800;
+  border:none;border-radius:var(--r12);height:54px;cursor:pointer;
+  font-family:var(--font);
+  box-shadow:0 4px 18px rgba(232,37,26,.4);
+  transition:transform .15s;
+}
+.btn-home:active{transform:scale(.98);}
+
+/* ══════════════════════════════════
+   SEARCH SCREEN
+══════════════════════════════════ */
+.search-screen-header{
+  padding:46px 20px 14px;
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.search-top-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.s-input-wrap{
+  flex:1;background:var(--surface);border-radius:var(--r12);
+  display:flex;align-items:center;gap:8px;padding:0 12px;height:44px;
+  border:1.5px solid var(--red);
+}
+.s-input-wrap svg{width:16px;height:16px;color:var(--red);}
+.s-input-wrap input{
+  border:none;background:none;outline:none;font-size:14px;color:var(--text);
+  font-family:var(--font);font-weight:600;width:100%;
+}
+.filter-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
+.filter-row::-webkit-scrollbar{display:none;}
+.chip{
+  padding:6px 14px;border-radius:var(--r99);font-size:11px;font-weight:700;
+  background:var(--surface);color:var(--text2);border:1.5px solid var(--border);
+  white-space:nowrap;cursor:pointer;transition:all .18s;flex-shrink:0;
+}
+.chip.active{background:var(--red-light);color:var(--red);border-color:var(--red);}
+
+/* Map mockup */
+.map-area{
+  height:200px;
+  background:linear-gradient(135deg,#e8f4f8 0%,#d4e8f0 100%);
+  position:relative;overflow:hidden;flex-shrink:0;
+}
+.map-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(37,99,235,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.07) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+.map-road{position:absolute;background:rgba(255,255,255,.75);}
+.map-road.h{height:5px;width:100%;border-radius:3px;}
+.map-road.v{width:5px;height:100%;border-radius:3px;}
+.price-pin{
+  position:absolute;background:var(--bg);border:2px solid var(--red);
+  border-radius:var(--r8);padding:3px 8px;font-size:11px;font-weight:900;color:var(--red);
+  box-shadow:var(--shadow-md);cursor:pointer;
+  transition:transform .15s;
+}
+.price-pin:active{transform:scale(.9);}
+.price-pin.active-pin{background:var(--red);color:white;}
+.my-loc{
+  position:absolute;width:14px;height:14px;
+  background:var(--blue);border-radius:50%;
+  border:2px solid white;box-shadow:0 0 0 4px rgba(37,99,235,.2);
+  top:55%;left:50%;transform:translate(-50%,-50%);
+}
+
+/* ══════════════════════════════════
+   BOOKINGS SCREEN
+══════════════════════════════════ */
+.bookings-header{
+  padding:52px 20px 14px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.bookings-title{font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.4px;}
+.tab-row{display:flex;background:var(--surface);border-radius:var(--r12);padding:4px;margin-top:12px;}
+.tab{flex:1;text-align:center;padding:8px;border-radius:var(--r8);
+  font-size:13px;font-weight:700;color:var(--text3);cursor:pointer;transition:all .2s;}
+.tab.active{background:var(--bg);color:var(--text);box-shadow:var(--shadow-sm);}
+
+.booking-mini{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 20px;border-bottom:1px solid var(--border);
+  cursor:pointer;transition:background .15s;
+}
+.booking-mini:active{background:var(--surface);}
+.bm-img{
+  width:64px;height:64px;border-radius:var(--r12);
+  display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0;
+}
+.bm-info{flex:1;}
+.bm-name{font-size:14px;font-weight:800;color:var(--text);margin-bottom:3px;}
+.bm-date{font-size:11px;color:var(--text3);}
+.bm-price{font-size:15px;font-weight:900;color:var(--text);text-align:right;}
+.status-pill{
+  font-size:10px;font-weight:700;padding:3px 9px;
+  border-radius:var(--r99);margin-bottom:5px;display:inline-block;
+}
+.status-pill.upcoming{background:#EFF6FF;color:var(--blue);}
+.status-pill.confirmed{background:var(--green-light);color:var(--green);}
+.status-pill.done{background:var(--surface);color:var(--text3);}
+
+/* ══════════════════════════════════
+   PROFILE SCREEN
+══════════════════════════════════ */
+.profile-hero{
+  background:linear-gradient(160deg,#1a0a08,#2d0f0f);
+  padding:52px 20px 28px;
+  display:flex;flex-direction:column;align-items:center;
+  flex-shrink:0;
+}
+.profile-av{
+  width:80px;height:80px;
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:900;color:white;
+  position:relative;margin-bottom:14px;
+  box-shadow:0 6px 24px rgba(102,126,234,.4);
+}
+.profile-edit{
+  position:absolute;bottom:-2px;right:-2px;
+  width:26px;height:26px;background:var(--red);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  border:2px solid white;cursor:pointer;
+}
+.profile-edit svg{width:12px;height:12px;color:white;}
+.profile-name{font-size:22px;font-weight:900;color:white;margin-bottom:3px;letter-spacing:-.3px;}
+.profile-email{font-size:13px;color:rgba(255,255,255,.5);}
+.verified{
+  display:flex;align-items:center;gap:5px;margin-top:10px;
+  background:rgba(22,163,74,.2);border:1px solid rgba(22,163,74,.4);
+  padding:5px 12px;border-radius:var(--r99);
+}
+.verified svg{width:14px;height:14px;color:var(--green);}
+.verified span{font-size:11px;font-weight:700;color:var(--green);}
+
+.stats-row{
+  display:flex;background:var(--surface);margin:0;
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.stat-item{
+  flex:1;text-align:center;padding:16px 0;
+  border-right:1px solid var(--border);
+}
+.stat-item:last-child{border-right:none;}
+.stat-val{font-size:18px;font-weight:900;color:var(--text);}
+.stat-lbl{font-size:10px;color:var(--text3);font-weight:500;margin-top:2px;}
+
+.section-label{
+  font-size:11px;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.1em;
+  padding:16px 20px 8px;
+}
+.menu-item{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 20px;border-bottom:1px solid var(--border);
+  cursor:pointer;transition:background .15s;
+}
+.menu-item:active{background:var(--surface);}
+.m-ico{
+  width:38px;height:38px;border-radius:var(--r10,10px);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.m-ico.red{background:var(--red-light);}
+.m-ico.blue{background:#EFF6FF;}
+.m-ico.green{background:var(--green-light);}
+.m-ico.yellow{background:#FFFBEB;}
+.m-ico svg{width:18px;height:18px;}
+.m-ico.red svg{color:var(--red);}
+.m-ico.blue svg{color:var(--blue);}
+.m-ico.green svg{color:var(--green);}
+.m-ico.yellow svg{color:var(--yellow);}
+.m-text{flex:1;}
+.m-label{font-size:14px;font-weight:700;color:var(--text);}
+.m-sub{font-size:11px;color:var(--text3);}
+.m-arrow{width:16px;height:16px;color:var(--text3);}
+.toggle-sw{
+  width:42px;height:24px;background:var(--red);border-radius:var(--r99);
+  position:relative;cursor:pointer;
+}
+.toggle-sw::after{
+  content:'';position:absolute;top:3px;right:3px;
+  width:18px;height:18px;background:white;border-radius:50%;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+
+
+/* ══════════════════════════════════
+   AUTH SCREEN
+══════════════════════════════════ */
+#auth {
+  background: var(--bg);
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+.auth-box {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.auth-box input {
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--r12);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 14px;
+  font-family: var(--font);
+  outline: none;
+}
+.auth-box input:focus {
+  border-color: var(--red);
+}
+.auth-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--red2), var(--red-dark));
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+  border: none;
+  border-radius: var(--r12);
+  height: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(232,37,26,.4);
+  font-family: var(--font);
+}
+.auth-switch {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 10px;
+  cursor: pointer;
+}
+.auth-switch span {
+  color: var(--red);
+  font-weight: 700;
+}
+
+/* ── Animations ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+.anim-1{animation:fadeUp .3s ease .05s both;}
+.anim-2{animation:fadeUp .3s ease .10s both;}
+.anim-3{animation:fadeUp .3s ease .15s both;}
+.anim-4{animation:fadeUp .3s ease .20s both;}
+.anim-5{animation:fadeUp .3s ease .25s both;}
+
+/* ── Listing flow UI ── */
+.vtype-opt{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  background:var(--surface);border:2px solid var(--border);border-radius:var(--r16);
+  padding:16px 10px;font-size:28px;cursor:pointer;transition:all .18s;
+}
+.vtype-opt span{font-size:12px;font-weight:700;color:var(--text2);}
+.vtype-opt.active{background:var(--red-light);border-color:var(--red);}
+.vtype-opt.active span{color:var(--red);}
+.seat-opt{
+  flex:1;height:40px;display:flex;align-items:center;justify-content:center;
+  background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r8);
+  font-size:13px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .18s;
+}
+.seat-opt.active{background:var(--red-light);border-color:var(--red);color:var(--red);}
+.cal-day{
+  width:100%;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:600;cursor:pointer;
+}
+.cal-day.avail{background:var(--green-light);color:var(--green);}
+.cal-day.booked{background:var(--surface2);color:var(--text3);}
+
+
+/* Responsive for mobile preview */
+@media(max-width:420px){
+  :root{--phone-w:100vw;--phone-h:100vh;}
+  .android-shell{border-radius:0;box-shadow:none;}
+  .phone-screen{border-radius:0;}
+}
+</style>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+</head>
+<body>
+
+<div class="android-shell">
+  <!-- Hardware details -->
+  <div class="punch-hole"></div>
+  <div class="side-vol up"></div>
+  <div class="side-vol dn"></div>
+  <div class="side-power"></div>
+
+  <div class="phone-screen">
+
+    <!-- ══ SPLASH ══ -->
+    <div class="screen active" id="splash" style="position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center;z-index:100;">
+      <div class="splash-logo">
+        <div class="splash-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="5.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>
+            <path d="M1 9l4-4h10l4 4H1z"/><path d="M1 9v5a1 1 0 001 1h1m14 0h2a1 1 0 001-1V9"/>
+          </svg>
+        </div>
+        <div class="splash-name">Ride <span>It</span></div>
+        <div class="splash-tagline">Your city. Your wheels.</div>
+        <div class="splash-loader"><div class="splash-loader-bar"></div></div>
+      </div>
+    </div>
+
+    
+    <!-- ══ AUTH ══ -->
+    <div class="screen" id="auth">
+      <div class="auth-box" id="login-box">
+        <h2 style="font-size:24px; font-weight:800; text-align:center; margin-bottom:10px;">Welcome Back!</h2>
+        <input type="email" id="login-email" placeholder="Email Address">
+        <input type="password" id="login-password" placeholder="Password">
+        <button class="auth-btn" onclick="doLogin()">Login</button>
+        <div class="auth-switch" onclick="document.getElementById('login-box').style.display='none'; document.getElementById('register-box').style.display='flex';">
+          Don't have an account? <span>Register</span>
+        </div>
+      </div>
+      <div class="auth-box" id="register-box" style="display:none;">
+        <h2 style="font-size:24px; font-weight:800; text-align:center; margin-bottom:10px;">Create Account</h2>
+        <input type="text" id="reg-name" placeholder="Full Name">
+        <input type="email" id="reg-email" placeholder="Email Address">
+        <input type="password" id="reg-password" placeholder="Password">
+        <button class="auth-btn" onclick="doRegister()">Register</button>
+        <div class="auth-switch" onclick="document.getElementById('register-box').style.display='none'; document.getElementById('login-box').style.display='flex';">
+          Already have an account? <span>Login</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ HOME ══ -->
+    <div class="screen" id="home">
+      <div class="status-bar">
+        <span style="font-weight:700;">9:41</span>
+        <div class="status-icons">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0119 12.55M5 12.55a10.94 10.94 0 015.17-2.39M10.71 5.05A16 16 0 0122.56 9M1.42 9a15.91 15.91 0 014.7-2.88M8.53 16.11a6 6 0 016.95 0M12 20h.01" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="6" width="22" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="8" width="16" height="8" rx="1"/></svg>
+        </div>
+      </div>
+      <div class="scroll-body">
+        <div class="home-header anim-1">
+          <div class="location-chip">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            <div>
+              <span class="loc-label">Your location</span>
+              <span class="loc-name">Andheri West, Mumbai</span>
+            </div>
+            <svg class="loc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="avatar-btn" onclick="goTo('profile')">R<div class="avatar-dot"></div></div>
+        </div>
+
+        <div class="greeting anim-2">
+          <p>Good morning 👋</p>
+          <h2>Where to, <em>Rohan?</em></h2>
+        </div>
+
+        <div class="search-row anim-3">
+          <div class="search-box" onclick="goTo('search-screen')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input type="text" placeholder="Search cars, bikes…" readonly onclick="goTo('search-screen')">
+          </div>
+          <div class="filter-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+          </div>
+        </div>
+
+        <div class="sec-header anim-3">
+          <span class="sec-title">Browse</span>
+        </div>
+        <div class="cats anim-3">
+          <div class="cat active" onclick="filterCat(this)">
+            <div class="cat-ico">🚗</div>
+            <span class="cat-lbl">Cars</span>
+          </div>
+          <div class="cat" onclick="filterCat(this)">
+            <div class="cat-ico">🛵</div>
+            <span class="cat-lbl">Bikes</span>
+          </div>
+          <div class="cat" onclick="filterCat(this)">
+            <div class="cat-ico">🏎️</div>
+            <span class="cat-lbl">Sports</span>
+          </div>
+          <div class="cat" onclick="filterCat(this)">
+            <div class="cat-ico">🚐</div>
+            <span class="cat-lbl">SUVs</span>
+          </div>
+          <div class="cat" onclick="filterCat(this)">
+            <div class="cat-ico">⚡</div>
+            <span class="cat-lbl">Electric</span>
+          </div>
+          <div class="cat" onclick="filterCat(this)">
+            <div class="cat-ico">🛺</div>
+            <span class="cat-lbl">Autos</span>
+          </div>
+        </div>
+
+        <div class="sec-header anim-4" style="margin-top:8px;">
+          <span class="sec-title">Trending Rides</span>
+          <span class="see-all" onclick="goTo('search-screen')">See all</span>
+        </div>
+        <div class="h-scroll anim-4">
+          <div style="display:flex;align-items:center;justify-content:center;width:100%;padding:30px 20px;flex-direction:column;gap:8px;">
+            <div style="font-size:36px;">🚗</div>
+            <div style="font-size:14px;font-weight:700;color:var(--text2);">No vehicles listed yet</div>
+            <div style="font-size:12px;color:var(--text3);text-align:center;">Be the first to list your vehicle and start earning!</div>
+          </div>
+        </div>
+
+        <div class="sec-header anim-5" style="margin-top:20px;">
+          <span class="sec-title">Near You</span>
+          <span class="see-all" onclick="goTo('search-screen')">Map view</span>
+        </div>
+
+        <div style="padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;">
+          <div style="font-size:36px;">📍</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text2);">No vehicles nearby yet</div>
+          <div style="font-size:12px;color:var(--text3);">List your vehicle to appear here!</div>
+        </div>
+
+        <div style="height:20px;"></div>
+      </div><!-- end scroll -->
+
+      <div class="bottom-nav">
+        <div class="nav-item active" onclick="goTo('home')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          <span>Home</span>
+        </div>
+        <div class="nav-item" onclick="goTo('search-screen')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <span>Search</span>
+        </div>
+        <div class="nav-center" onclick="goTo('list-vehicle')">
+          <div class="nav-fab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <span>List Car</span>
+        </div>
+        <div class="nav-item" onclick="goTo('bookings')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>Bookings</span>
+        </div>
+        <div class="nav-item" onclick="goTo('profile')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Profile</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SEARCH ══ -->
+    <div class="screen" id="search-screen">
+      <div class="search-screen-header">
+        <div class="search-top-row">
+          <div class="back-btn" onclick="goBack()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          </div>
+          <div class="s-input-wrap" style="flex:1;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input type="text" id="map-search-input" placeholder="Search locations..." onkeydown="handleMapSearch(event)">
+          </div>
+          <div class="filter-btn" style="width:44px;height:44px;background:#EFF6FF;color:var(--blue);" onclick="locateMe()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2m10-10h-2M4 12H2M12 22A10 10 0 1012 2a10 10 0 000 20z"/></svg>
+          </div>
+        </div>
+        <div class="filter-row">
+          <div class="chip active">All</div>
+          <div class="chip" onclick="toggleChip(this)">Cars</div>
+          <div class="chip" onclick="toggleChip(this)">Bikes</div>
+          <div class="chip" onclick="toggleChip(this)">Under ₹1,000</div>
+          <div class="chip" onclick="toggleChip(this)">Top Rated</div>
+          <div class="chip" onclick="toggleChip(this)">Instant Book</div>
+        </div>
+      </div>
+
+      <div class="map-area">
+        <div class="map-grid"></div>
+        <div class="map-road h" style="top:38%"></div>
+        <div class="map-road h" style="top:62%"></div>
+        <div class="map-road v" style="left:30%"></div>
+        <div class="map-road v" style="left:65%"></div>
+        <div class="price-pin" style="top:50%;left:50%;transform:translate(-50%,-50%);opacity:.4;">No listings</div>
+        <div class="my-loc"></div>
+      </div>
+
+      <div class="scroll-body" style="padding-top:12px;">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 20px;gap:10px;">
+          <div style="font-size:48px;">🔍</div>
+          <div style="font-size:16px;font-weight:800;color:var(--text2);">No vehicles found</div>
+          <div style="font-size:13px;color:var(--text3);text-align:center;">Be the first to list your vehicle in this area!</div>
+          <div style="margin-top:8px;background:var(--red);color:white;font-size:13px;font-weight:700;padding:10px 20px;border-radius:var(--r99);cursor:pointer;" onclick="goTo('list-vehicle')">+ List a Vehicle</div>
+        </div>
+        <div style="height:20px;"></div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="goTo('home')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Home</span>
+        </div>
+        <div class="nav-item active" onclick="goTo('search-screen')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span>
+        </div>
+        <div class="nav-center" onclick="goTo('list-vehicle')">
+          <div class="nav-fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          <span>List Car</span>
+        </div>
+        <div class="nav-item" onclick="goTo('bookings')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Bookings</span>
+        </div>
+        <div class="nav-item" onclick="goTo('profile')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ VEHICLE DETAIL: TRIUMPH SPEED 400 ══ -->
+    <div class="screen" id="detail-triumph" style="position:relative;">
+      <div class="status-bar" style="position:absolute;top:0;left:0;right:0;background:transparent;z-index:20;">
+        <span style="color:rgba(0,0,0,.6);font-weight:700;">9:41</span>
+        <div class="status-icons" style="color:rgba(0,0,0,.5);">
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="6" width="22" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="8" width="16" height="8" rx="1"/></svg>
+        </div>
+      </div>
+
+      <div class="scroll-body">
+        <div class="detail-hero bg-green">
+          🏍️
+          <div class="detail-back" onclick="goBack()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          </div>
+          <div class="detail-fav-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          </div>
+          <div class="detail-tag-wrap">
+            <div class="d-tag dark">Classic Bike</div>
+            <div class="d-tag green">● Available</div>
+          </div>
+        </div>
+
+        <div class="detail-body">
+          <div class="d-title-row">
+            <div class="d-title">Triumph Speed 400</div>
+            <div class="d-price-box">
+              <div class="d-price-amt">₹1,500</div>
+              <div class="d-price-per">/day</div>
+            </div>
+          </div>
+          <div class="d-subtitle">Triumph · 2023 · Classic · Mumbai</div>
+
+          <div class="d-rating-row">
+            <div class="d-stars">
+              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            </div>
+            <span class="d-rating-val">4.9</span>
+            <span class="d-rating-count">(38 reviews)</span>
+            <div class="d-dist-pill">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+              0.4 km
+            </div>
+          </div>
+
+          <div class="spec-grid">
+            <div class="spec-item">
+              <div class="spec-ico">⛽</div>
+              <div class="spec-val">Petrol</div>
+              <div class="spec-key">Fuel</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-ico">⚙️</div>
+              <div class="spec-val">Manual</div>
+              <div class="spec-key">Gearbox</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-ico">📍</div>
+              <div class="spec-val">0.4 km</div>
+              <div class="spec-key">Away</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-ico">💨</div>
+              <div class="spec-val">39 HP</div>
+              <div class="spec-key">Power</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-ico">🏁</div>
+              <div class="spec-val">160 km/h</div>
+              <div class="spec-key">Top Speed</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-ico">🛡️</div>
+              <div class="spec-val">Insured</div>
+              <div class="spec-key">Coverage</div>
+            </div>
+          </div>
+
+          <div class="sec-title2">Select Dates</div>
+          <div class="date-picker">
+            <div class="date-box active">
+              <label>Pick-up</label>
+              <span>Mon, 2 June</span>
+            </div>
+            <div class="date-box">
+              <label>Return</label>
+              <span>Wed, 4 June</span>
+            </div>
+          </div>
+
+          <div class="sec-title2">Pick-up Location</div>
+          <div style="background:var(--surface);border-radius:var(--r12);padding:12px 14px;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--red)"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);">Andheri West, Mumbai</div>
+              <div style="font-size:11px;color:var(--blue);font-weight:600;">📍 0.4 km from you</div>
+            </div>
+          </div>
+
+          <div class="sec-title2">Hosted by</div>
+          <div class="host-row">
+            <div class="host-av">R</div>
+            <div class="host-info">
+              <div class="host-name">Rohan Mehta</div>
+              <div class="host-meta">⭐ 4.9 · 23 trips hosted · Verified</div>
+            </div>
+            <div class="host-badge">Trusted Host</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-cta">
+        <div class="cta-price">
+          <span class="amt">₹3,350</span>
+          <span class="lbl">Total · 2 days</span>
+        </div>
+        <button class="btn-book" onclick="goTo('confirm')">Book Now →</button>
+      </div>
+    </div>
+
+    <!-- ══ VEHICLE DETAIL: MAHINDRA THAR ══ -->
+    <div class="screen" id="detail-thar" style="position:relative;">
+      <div class="status-bar" style="position:absolute;top:0;left:0;right:0;background:transparent;z-index:20;">
+        <span style="color:rgba(0,0,0,.6);font-weight:700;">9:41</span>
+        <div class="status-icons" style="color:rgba(0,0,0,.5);"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="6" width="22" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="8" width="16" height="8" rx="1"/></svg></div>
+      </div>
+      <div class="scroll-body">
+        <div class="detail-hero bg-blue">🚙
+          <div class="detail-back" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>
+          <div class="detail-fav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+          <div class="detail-tag-wrap"><div class="d-tag dark">SUV · 4x4</div><div class="d-tag green">● Available</div></div>
+        </div>
+        <div class="detail-body">
+          <div class="d-title-row"><div class="d-title">Mahindra Thar</div><div class="d-price-box"><div class="d-price-amt">₹2,499</div><div class="d-price-per">/day</div></div></div>
+          <div class="d-subtitle">Mahindra · 2023 · SUV · Mumbai</div>
+          <div class="d-rating-row"><div class="d-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div><span class="d-rating-val">4.8</span><span class="d-rating-count">(52 reviews)</span><div class="d-dist-pill"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>1.2 km</div></div>
+          <div class="spec-grid">
+            <div class="spec-item"><div class="spec-ico">⛽</div><div class="spec-val">Diesel</div><div class="spec-key">Fuel</div></div>
+            <div class="spec-item"><div class="spec-ico">⚙️</div><div class="spec-val">Manual</div><div class="spec-key">Gearbox</div></div>
+            <div class="spec-item"><div class="spec-ico">📍</div><div class="spec-val">1.2 km</div><div class="spec-key">Away</div></div>
+            <div class="spec-item"><div class="spec-ico">💺</div><div class="spec-val">4 Seats</div><div class="spec-key">Capacity</div></div>
+            <div class="spec-item"><div class="spec-ico">🏔️</div><div class="spec-val">4WD</div><div class="spec-key">Drive</div></div>
+            <div class="spec-item"><div class="spec-ico">🛡️</div><div class="spec-val">Insured</div><div class="spec-key">Coverage</div></div>
+          </div>
+          <div class="sec-title2">Select Dates</div>
+          <div class="date-picker"><div class="date-box active"><label>Pick-up</label><span>Mon, 2 June</span></div><div class="date-box"><label>Return</label><span>Wed, 4 June</span></div></div>
+          <div class="sec-title2">Pick-up Location</div>
+          <div style="background:var(--surface);border-radius:var(--r12);padding:12px 14px;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--red)"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+            <div><div style="font-size:13px;font-weight:700;color:var(--text);">Bandra West, Mumbai</div><div style="font-size:11px;color:var(--blue);font-weight:600;">📍 1.2 km from you</div></div>
+          </div>
+          <div class="sec-title2">Hosted by</div>
+          <div class="host-row"><div class="host-av">A</div><div class="host-info"><div class="host-name">Amit Sharma</div><div class="host-meta">⭐ 4.8 · 18 trips hosted · Verified</div></div><div class="host-badge">Trusted Host</div></div>
+        </div>
+      </div>
+      <div class="detail-cta">
+        <div class="cta-price"><span class="amt">₹5,148</span><span class="lbl">Total · 2 days</span></div>
+        <button class="btn-book" onclick="goTo('confirm')">Book Now →</button>
+      </div>
+    </div>
+
+    <!-- ══ VEHICLE DETAIL: SKODA OCTAVIA RS ══ -->
+    <div class="screen" id="detail-skoda" style="position:relative;">
+      <div class="status-bar" style="position:absolute;top:0;left:0;right:0;background:transparent;z-index:20;">
+        <span style="color:rgba(0,0,0,.6);font-weight:700;">9:41</span>
+        <div class="status-icons" style="color:rgba(0,0,0,.5);"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="6" width="22" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="8" width="16" height="8" rx="1"/></svg></div>
+      </div>
+      <div class="scroll-body">
+        <div class="detail-hero bg-orange">🏎️
+          <div class="detail-back" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>
+          <div class="detail-fav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+          <div class="detail-tag-wrap"><div class="d-tag dark">Sedan · RS</div><div class="d-tag green">● Available</div></div>
+        </div>
+        <div class="detail-body">
+          <div class="d-title-row"><div class="d-title">Skoda Octavia RS</div><div class="d-price-box"><div class="d-price-amt">₹4,200</div><div class="d-price-per">/day</div></div></div>
+          <div class="d-subtitle">Skoda · 2022 · Sedan · Mumbai</div>
+          <div class="d-rating-row"><div class="d-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span style="color:#ddd;">★</span></div><span class="d-rating-val">4.2</span><span class="d-rating-count">(29 reviews)</span><div class="d-dist-pill"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>2.7 km</div></div>
+          <div class="spec-grid">
+            <div class="spec-item"><div class="spec-ico">⛽</div><div class="spec-val">Petrol</div><div class="spec-key">Fuel</div></div>
+            <div class="spec-item"><div class="spec-ico">⚙️</div><div class="spec-val">DSG Auto</div><div class="spec-key">Gearbox</div></div>
+            <div class="spec-item"><div class="spec-ico">📍</div><div class="spec-val">2.7 km</div><div class="spec-key">Away</div></div>
+            <div class="spec-item"><div class="spec-ico">💺</div><div class="spec-val">5 Seats</div><div class="spec-key">Capacity</div></div>
+            <div class="spec-item"><div class="spec-ico">💨</div><div class="spec-val">245 HP</div><div class="spec-key">Power</div></div>
+            <div class="spec-item"><div class="spec-ico">🛡️</div><div class="spec-val">Insured</div><div class="spec-key">Coverage</div></div>
+          </div>
+          <div class="sec-title2">Select Dates</div>
+          <div class="date-picker"><div class="date-box active"><label>Pick-up</label><span>Mon, 2 June</span></div><div class="date-box"><label>Return</label><span>Wed, 4 June</span></div></div>
+          <div class="sec-title2">Pick-up Location</div>
+          <div style="background:var(--surface);border-radius:var(--r12);padding:12px 14px;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--red)"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+            <div><div style="font-size:13px;font-weight:700;color:var(--text);">Powai, Mumbai</div><div style="font-size:11px;color:var(--blue);font-weight:600;">📍 2.7 km from you</div></div>
+          </div>
+          <div class="sec-title2">Hosted by</div>
+          <div class="host-row"><div class="host-av">P</div><div class="host-info"><div class="host-name">Priya Nair</div><div class="host-meta">⭐ 4.6 · 11 trips hosted · Verified</div></div><div class="host-badge">Trusted Host</div></div>
+        </div>
+      </div>
+      <div class="detail-cta">
+        <div class="cta-price"><span class="amt">₹8,750</span><span class="lbl">Total · 2 days</span></div>
+        <button class="btn-book" onclick="goTo('confirm')">Book Now →</button>
+      </div>
+    </div>
+
+    <!-- ══ VEHICLE DETAIL: MARUTI WAGON R ══ -->
+    <div class="screen" id="detail-wagonr" style="position:relative;">
+      <div class="status-bar" style="position:absolute;top:0;left:0;right:0;background:transparent;z-index:20;">
+        <span style="color:rgba(0,0,0,.6);font-weight:700;">9:41</span>
+        <div class="status-icons" style="color:rgba(0,0,0,.5);"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="6" width="22" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="8" width="16" height="8" rx="1"/></svg></div>
+      </div>
+      <div class="scroll-body">
+        <div class="detail-hero bg-slate">🚗
+          <div class="detail-back" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>
+          <div class="detail-fav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+          <div class="detail-tag-wrap"><div class="d-tag dark">Hatchback</div><div class="d-tag green">● Available</div></div>
+        </div>
+        <div class="detail-body">
+          <div class="d-title-row"><div class="d-title">Maruti Wagon R</div><div class="d-price-box"><div class="d-price-amt">₹799</div><div class="d-price-per">/day</div></div></div>
+          <div class="d-subtitle">Maruti · 2022 · Hatchback · Mumbai</div>
+          <div class="d-rating-row"><div class="d-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div><span class="d-rating-val">4.7</span><span class="d-rating-count">(41 reviews)</span><div class="d-dist-pill"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>0.6 km</div></div>
+          <div class="spec-grid">
+            <div class="spec-item"><div class="spec-ico">⛽</div><div class="spec-val">Petrol</div><div class="spec-key">Fuel</div></div>
+            <div class="spec-item"><div class="spec-ico">⚙️</div><div class="spec-val">Manual</div><div class="spec-key">Gearbox</div></div>
+            <div class="spec-item"><div class="spec-ico">📍</div><div class="spec-val">0.6 km</div><div class="spec-key">Away</div></div>
+            <div class="spec-item"><div class="spec-ico">💺</div><div class="spec-val">5 Seats</div><div class="spec-key">Capacity</div></div>
+            <div class="spec-item"><div class="spec-ico">🌿</div><div class="spec-val">18 km/l</div><div class="spec-key">Mileage</div></div>
+            <div class="spec-item"><div class="spec-ico">🛡️</div><div class="spec-val">Insured</div><div class="spec-key">Coverage</div></div>
+          </div>
+          <div class="sec-title2">Select Dates</div>
+          <div class="date-picker"><div class="date-box active"><label>Pick-up</label><span>Mon, 2 June</span></div><div class="date-box"><label>Return</label><span>Wed, 4 June</span></div></div>
+          <div class="sec-title2">Pick-up Location</div>
+          <div style="background:var(--surface);border-radius:var(--r12);padding:12px 14px;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--red)"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+            <div><div style="font-size:13px;font-weight:700;color:var(--text);">Andheri West, Mumbai</div><div style="font-size:11px;color:var(--blue);font-weight:600;">📍 0.6 km from you</div></div>
+          </div>
+          <div class="sec-title2">Hosted by</div>
+          <div class="host-row"><div class="host-av">S</div><div class="host-info"><div class="host-name">Sunita Patil</div><div class="host-meta">⭐ 4.7 · 34 trips hosted · Verified</div></div><div class="host-badge">Trusted Host</div></div>
+        </div>
+      </div>
+      <div class="detail-cta">
+        <div class="cta-price"><span class="amt">₹1,748</span><span class="lbl">Total · 2 days</span></div>
+        <button class="btn-book" onclick="goTo('confirm')">Book Now →</button>
+      </div>
+    </div>
+
+    <!-- ══ VEHICLE DETAIL: TVS APACHE ══ -->
+    <div class="screen" id="detail-tvs" style="position:relative;">
+      <div class="status-bar" style="position:absolute;top:0;left:0;right:0;background:transparent;z-index:20;">
+        <span style="color:rgba(0,0,0,.6);font-weight:700;">9:41</span>
+        <div class="status-icons" style="color:rgba(0,0,0,.5);"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="6" width="22" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="8" width="16" height="8" rx="1"/></svg></div>
+      </div>
+      <div class="scroll-body">
+        <div class="detail-hero bg-pink">🛵
+          <div class="detail-back" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>
+          <div class="detail-fav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+          <div class="detail-tag-wrap"><div class="d-tag dark">Sport Bike</div><div class="d-tag green">● Available</div></div>
+        </div>
+        <div class="detail-body">
+          <div class="d-title-row"><div class="d-title">TVS Apache RTR 200</div><div class="d-price-box"><div class="d-price-amt">₹700</div><div class="d-price-per">/day</div></div></div>
+          <div class="d-subtitle">TVS · 2023 · Sport Bike · Mumbai</div>
+          <div class="d-rating-row"><div class="d-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div><span class="d-rating-val">4.6</span><span class="d-rating-count">(27 reviews)</span><div class="d-dist-pill"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>0.9 km</div></div>
+          <div class="spec-grid">
+            <div class="spec-item"><div class="spec-ico">⛽</div><div class="spec-val">Petrol</div><div class="spec-key">Fuel</div></div>
+            <div class="spec-item"><div class="spec-ico">⚙️</div><div class="spec-val">Manual</div><div class="spec-key">Gearbox</div></div>
+            <div class="spec-item"><div class="spec-ico">📍</div><div class="spec-val">0.9 km</div><div class="spec-key">Away</div></div>
+            <div class="spec-item"><div class="spec-ico">💨</div><div class="spec-val">20.8 HP</div><div class="spec-key">Power</div></div>
+            <div class="spec-item"><div class="spec-ico">🏁</div><div class="spec-val">127 km/h</div><div class="spec-key">Top Speed</div></div>
+            <div class="spec-item"><div class="spec-ico">🛡️</div><div class="spec-val">Insured</div><div class="spec-key">Coverage</div></div>
+          </div>
+          <div class="sec-title2">Select Dates</div>
+          <div class="date-picker"><div class="date-box active"><label>Pick-up</label><span>Mon, 2 June</span></div><div class="date-box"><label>Return</label><span>Wed, 4 June</span></div></div>
+          <div class="sec-title2">Pick-up Location</div>
+          <div style="background:var(--surface);border-radius:var(--r12);padding:12px 14px;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--red)"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+            <div><div style="font-size:13px;font-weight:700;color:var(--text);">Juhu, Mumbai</div><div style="font-size:11px;color:var(--blue);font-weight:600;">📍 0.9 km from you</div></div>
+          </div>
+          <div class="sec-title2">Hosted by</div>
+          <div class="host-row"><div class="host-av">K</div><div class="host-info"><div class="host-name">Karan Joshi</div><div class="host-meta">⭐ 4.6 · 14 trips hosted · Verified</div></div><div class="host-badge">Trusted Host</div></div>
+        </div>
+      </div>
+      <div class="detail-cta">
+        <div class="cta-price"><span class="amt">₹1,550</span><span class="lbl">Total · 2 days</span></div>
+        <button class="btn-book" onclick="goTo('confirm')">Book Now →</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         LIST VEHICLE FLOW (5 STEPS)
+    ══════════════════════════════════════════════════════ -->
+
+    <!-- LISTING ENTRY (Step 1: Vehicle Info) -->
+    <div class="screen" id="list-vehicle">
+      <div class="confirm-header">
+        <div class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>
+        <span class="confirm-title">List Your Vehicle</span>
+      </div>
+      <div class="scroll-body" style="padding:20px 20px 100px;">
+          <div style="font-size:18px;font-weight:800;margin-bottom:15px;">Vehicle Details</div>
+          <input type="text" id="v-name" placeholder="Vehicle Name (e.g. Swift, Thar)" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid var(--border);">
+          <input type="text" id="v-brand" placeholder="Brand" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid var(--border);">
+          <input type="number" id="v-price" placeholder="Price per day (₹)" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid var(--border);">
+          <select id="v-type" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid var(--border);">
+            <option>Car</option><option>Bike</option><option>Van</option><option>Bus</option><option>Truck</option><option>Sports</option><option>Electric</option>
+          </select>
+          
+          <div style="font-size:18px;font-weight:800;margin-top:20px;margin-bottom:15px;">Personal Details (KYC)</div>
+          <input type="text" id="v-owner" placeholder="Full Legal Name" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid var(--border);">
+          <input type="date" id="v-dob" placeholder="Date of Birth" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid var(--border);">
+          <input type="tel" id="v-phone" placeholder="Phone Number" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid var(--border);">
+          
+          <div style="font-size:18px;font-weight:800;margin-top:20px;margin-bottom:15px;">Location</div>
+          <input type="text" id="v-address" placeholder="Address" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid var(--border);">
+          <div style="display:flex;gap:10px;margin-bottom:10px;">
+              <input type="number" id="v-lat" placeholder="Latitude" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);">
+              <input type="number" id="v-lng" placeholder="Longitude" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);">
+          </div>
+          <button onclick="getListingLocation()" class="btn-book" style="width:100%;background:#EFF6FF;color:var(--blue);margin-bottom:20px;">📍 Pin My Location (GPS)</button>
+
+          <div style="font-size:18px;font-weight:800;margin-top:20px;margin-bottom:15px;">Photos & Documents</div>
+          <label style="font-size:12px;color:var(--text3);font-weight:bold;">Vehicle Main Photo</label>
+          <input type="file" id="v-image" accept="image/*" style="width:100%;margin-bottom:15px;">
+          
+          <label style="font-size:12px;color:var(--text3);font-weight:bold;">Aadhar Card</label>
+          <input type="file" id="v-aadhar" accept="image/*,.pdf" style="width:100%;margin-bottom:15px;">
+          
+          <label style="font-size:12px;color:var(--text3);font-weight:bold;">Driving License</label>
+          <input type="file" id="v-license" accept="image/*,.pdf" style="width:100%;margin-bottom:15px;">
+          
+          <label style="font-size:12px;color:var(--text3);font-weight:bold;">Vehicle RC</label>
+          <input type="file" id="v-rc" accept="image/*,.pdf" style="width:100%;margin-bottom:15px;">
+          
+          <label style="font-size:12px;color:var(--text3);font-weight:bold;">Valid Car Insurance</label>
+          <input type="file" id="v-insurance" accept="image/*,.pdf" style="width:100%;margin-bottom:25px;">
+          
+          <button onclick="submitVehicle()" class="btn-book" style="width:100%;">Upload & List Vehicle</button>
+      </div>
+    </div>
+    <!-- LISTING STEP 2: Pricing & Location -->
+    <div class="screen" id="list-step2" style="display:none;">
+      <div class="scroll-body" style="padding:20px 20px 100px;">
+        <div style="font-size:18px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-.3px;">Set your price</div>
+        <div style="font-size:13px;color:var(--text3);margin-bottom:20px;">Competitive pricing gets more bookings.</div>
+
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;">Price per Day <span style="color:var(--red);">*</span></div>
+        <div style="position:relative;margin-bottom:16px;">
+          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;font-weight:700;color:var(--text);">₹</span>
+          <input id="l-price" type="number" placeholder="e.g. 1500" style="width:100%;height:52px;padding:0 14px 0 28px;font-size:18px;font-weight:800;font-family:var(--font);color:var(--text);background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r12);outline:none;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;">Security Deposit <span style="color:var(--text3);font-weight:500;text-transform:none;letter-spacing:0;">(optional)</span></div>
+        <div style="position:relative;margin-bottom:20px;">
+          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;font-weight:700;color:var(--text);">₹</span>
+          <input id="l-deposit" type="number" placeholder="e.g. 5000" style="width:100%;height:48px;padding:0 14px 0 28px;font-size:16px;font-weight:600;font-family:var(--font);color:var(--text);background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r12);outline:none;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em;">Pick-up Location</div>
+        <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r12);overflow:hidden;margin-bottom:16px;cursor:pointer;">
+          <div style="height:130px;background:linear-gradient(135deg,#e8f4f8,#d4e8f0);position:relative;">
+            <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(37,99,235,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.07) 1px,transparent 1px);background-size:24px 24px;"></div>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+              <div style="background:var(--red);width:14px;height:14px;border-radius:50%;border:3px solid white;box-shadow:0 0 0 4px rgba(232,37,26,.25);"></div>
+            </div>
+            <div style="position:absolute;bottom:10px;right:10px;background:white;border-radius:var(--r8);padding:6px 10px;font-size:11px;font-weight:700;color:var(--text);box-shadow:var(--shadow-sm);">📍 Tap to pin</div>
+          </div>
+          <div style="padding:12px 14px;display:flex;align-items:center;gap:8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--red)"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+            <span style="font-size:13px;font-weight:700;color:var(--text);">Andheri West, Mumbai</span>
+          </div>
+        </div>
+
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em;">Availability</div>
+        <div style="background:var(--surface);border-radius:var(--r12);padding:14px;margin-bottom:8px;">
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;">
+            <div style="font-size:10px;font-weight:700;color:var(--text3);">M</div><div style="font-size:10px;font-weight:700;color:var(--text3);">T</div><div style="font-size:10px;font-weight:700;color:var(--text3);">W</div><div style="font-size:10px;font-weight:700;color:var(--text3);">T</div><div style="font-size:10px;font-weight:700;color:var(--text3);">F</div><div style="font-size:10px;font-weight:700;color:var(--text3);">S</div><div style="font-size:10px;font-weight:700;color:var(--text3);">S</div>
+            <div class="cal-day avail">2</div><div class="cal-day avail">3</div><div class="cal-day avail">4</div><div class="cal-day avail">5</div><div class="cal-day avail">6</div><div class="cal-day booked">7</div><div class="cal-day booked">8</div>
+            <div class="cal-day avail">9</div><div class="cal-day avail">10</div><div class="cal-day avail">11</div><div class="cal-day avail">12</div><div class="cal-day avail">13</div><div class="cal-day booked">14</div><div class="cal-day booked">15</div>
+            <div class="cal-day avail">16</div><div class="cal-day avail">17</div><div class="cal-day avail">18</div><div class="cal-day avail">19</div><div class="cal-day avail">20</div><div class="cal-day avail">21</div><div class="cal-day avail">22</div>
+          </div>
+          <div style="display:flex;gap:16px;margin-top:10px;">
+            <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;background:var(--green);border-radius:50%;"></div><span style="font-size:11px;color:var(--text3);">Available</span></div>
+            <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;background:var(--surface2);border-radius:50%;border:1px solid var(--border);"></div><span style="font-size:11px;color:var(--text3);">Blocked</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:16px 20px 28px;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg);">
+        <button class="btn-confirm" onclick="goTo('list-step3')">Continue →</button>
+      </div>
+    </div>
+
+    <!-- LISTING STEP 3: Upload Images -->
+    <div class="screen" id="list-step3">
+      <div class="confirm-header">
+        <div class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>
+        <span class="confirm-title">Upload Photos</span>
+      </div>
+      <div style="padding:0 20px 14px;flex-shrink:0;border-bottom:1px solid var(--border);">
+        <div style="display:flex;gap:6px;">
+          <div style="flex:1;height:4px;background:var(--red);border-radius:4px;"></div>
+          <div style="flex:1;height:4px;background:var(--red);border-radius:4px;"></div>
+          <div style="flex:1;height:4px;background:var(--red);border-radius:4px;"></div>
+          <div style="flex:1;height:4px;background:var(--surface2);border-radius:4px;"></div>
+          <div style="flex:1;height:4px;background:var(--surface2);border-radius:4px;"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:8px;font-weight:600;">Step 3 of 5 · Upload Photos</div>
+      </div>
+      <div class="scroll-body" style="padding:20px 20px 100px;">
+        <div style="font-size:18px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-.3px;">Add photos</div>
+        <div style="font-size:13px;color:var(--text3);margin-bottom:20px;">Listings with 4+ photos get 60% more bookings.</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+          <!-- Main photo slot (larger) -->
+          <div style="grid-column:1/-1;height:160px;background:var(--surface);border:2px dashed var(--border);border-radius:var(--r16);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;position:relative;overflow:hidden;" onclick="this.style.background='var(--red-light)';this.style.borderColor='var(--red)'">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            <span style="font-size:13px;font-weight:700;color:var(--text2);">Main photo</span>
+            <span style="font-size:11px;color:var(--text3);">Tap to upload</span>
+            <div style="position:absolute;top:8px;left:8px;background:var(--red);color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--r99);">Cover</div>
+          </div>
+          <!-- Additional slots -->
+          <div style="height:110px;background:var(--surface);border:2px dashed var(--border);border-radius:var(--r12);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;" onclick="this.style.background='var(--red-light)';this.style.borderColor='var(--red)'">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span style="font-size:11px;color:var(--text3);">Add photo</span>
+          </div>
+          <div style="height:110px;background:var(--surface);border:2px dashed var(--border);border-radius:var(--r12);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;" onclick="this.style.background='var(--red-light)';this.style.borderColor='var(--red)'">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span style="font-size:11px;color:var(--text3);">Add photo</span>
+          </div>
+          <div style="height:110px;background:var(--surface);border:2px dashed var(--border);border-radius:var(--r12);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;" onclick="this.style.background='var(--red-light)';this.style.borderColor='var(--red)'">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span style="font-size:11px;color:var(--text3);">Add photo</span>
+          </div>
+          <div style="height:110px;background:var(--surface);border:2px dashed var(--border);border-radius:var(--r12);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;" onclick="this.style.background='var(--red-light)';this.style.borderColor='var(--red)'">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span style="font-size:11px;color:var(--text3);">Add photo</span>
+          </div>
+        </div>
+        <div style="background:var(--surface);border-radius:var(--r12);padding:12px 14px;display:flex;align-items:center;gap:10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span style="font-size:12px;color:var(--text3);line-height:1.5;">Use bright, clear photos from multiple angles. Exterior, interior, and dashboard shots work best.</span>
+        </div>
+      </div>
+      <div style="padding:16px 20px 28px;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg);">
+        <button class="btn-confirm" onclick="goTo('list-step4')">Continue →</button>
+      </div>
+    </div>
+
+    <!-- LISTING STEP 4: Additional Details -->
+    <div class="screen" id="list-step4">
+      <div class="confirm-header">
+        <div class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>
+        <span class="confirm-title">Additional Details</span>
+      </div>
+      <div style="padding:0 20px 14px;flex-shrink:0;border-bottom:1px solid var(--border);">
+        <div style="display:flex;gap:6px;">
+          <div style="flex:1;height:4px;background:var(--red);border-radius:4px;"></div>
+          <div style="flex:1;height:4px;background:var(--red);border-radius:4px;"></div>
+          <div style="flex:1;height:4px;background:var(--red);border-radius:4px;"></div>
+          <div style="flex:1;height:4px;background:var(--red);border-radius:4px;"></div>
+          <div style="flex:1;height:4px;background:var(--surface2);border-radius:4px;"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:8px;font-weight:600;">Step 4 of 5 · Details & Rules</div>
+      </div>
+      <div class="scroll-body" style="padding:20px 20px 100px;">
+        <div style="font-size:18px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-.3px;">Tell renters more</div>
+        <div style="font-size:13px;color:var(--text3);margin-bottom:20px;">A good description builds trust.</div>
+
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;">Description</div>
+        <textarea id="l-desc" placeholder="Describe your vehicle — condition, special features, what makes it great to rent…" style="width:100%;min-height:110px;padding:14px;font-size:14px;font-family:var(--font);color:var(--text);background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r12);resize:none;outline:none;line-height:1.6;margin-bottom:20px;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em;">Rules & Policies</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+          <label style="display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--r12);padding:14px;">
+            <input type="checkbox" checked style="width:18px;height:18px;accent-color:var(--red);cursor:pointer;">
+            <div><div style="font-size:13px;font-weight:700;color:var(--text);">Helmet Required</div><div style="font-size:11px;color:var(--text3);">Renter must wear a helmet</div></div>
+          </label>
+          <label style="display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--r12);padding:14px;">
+            <input type="checkbox" checked style="width:18px;height:18px;accent-color:var(--red);cursor:pointer;">
+            <div><div style="font-size:13px;font-weight:700;color:var(--text);">Return with Full Fuel</div><div style="font-size:11px;color:var(--text3);">Vehicle must be returned full</div></div>
+          </label>
+          <label style="display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--r12);padding:14px;">
+            <input type="checkbox" style="width:18px;height:18px;accent-color:var(--red);cursor:pointer;">
+            <div><div style="font-size:13px;font-weight:700;color:var(--text);">No Smoking</div><div style="font-size:11px;color:var(--text3);">No smoking inside the vehicle</div></div>
+          </label>
+          <label style="display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--r12);padding:14px;">
+            <input type="checkbox" style="width:18px;height:18px;accent-color:var(--red);cursor:pointer;">
+            <div><div style="font-size:13px;font-weight:700;color:var(--text);">No Outstation</div><div style="font-size:11px;color:var(--text3);">City use only</div></div>
+          </label>
+          <label style="display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--r12);padding:14px;">
+            <input type="checkbox" checked style="width:18px;height:18px;accent-color:var(--red);cursor:pointer;">
+            <div><div style="font-size:13px;font-weight:700;color:var(--text);">Valid Licence Required</div><div style="font-size:11px;color:var(--text3);">Must show valid DL at pickup</div></div>
+          </label>
+        </div>
+      </div>
+      <div style="padding:16px 20px 28px;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg);">
+        <button class="btn-confirm" onclick="goTo('list-step5')">Continue →</button>
+      </div>
+    </div>
+
+    <!-- LISTING STEP 5: Review & Publish -->
+    <div class="screen" id="list-step5">
+      <div class="confirm-header">
+        <div class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>
+        <span class="confirm-title">Review & Publish</span>
+      </div>
+      <div style="padding:0 20px 14px;flex-shrink:0;border-bottom:1px solid var(--border);">
+        <div style="display:flex;gap:6px;">
+          <div style="flex:1;height:4px;background:var(--red);border-radius:4px;"></div>
+          <div style="flex:1;height:4px;background:var(--red);border-radius:4px;"></div>
+          <div style="flex:1;height:4px;background:var(--red);border-radius:4px;"></div>
+          <div style="flex:1;height:4px;background:var(--red);border-radius:4px;"></div>
+          <div style="flex:1;height:4px;background:var(--red);border-radius:4px;"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:8px;font-weight:600;">Step 5 of 5 · Review & Publish</div>
+      </div>
+      <div class="scroll-body" style="padding:20px 20px 120px;">
+        <div style="font-size:18px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-.3px;">Your listing preview</div>
+        <div style="font-size:13px;color:var(--text3);margin-bottom:20px;">This is how renters will see your vehicle.</div>
+
+        <!-- Preview card (matches home UI) -->
+        <div style="background:var(--bg);border-radius:var(--r16);box-shadow:var(--shadow-md);border:1px solid var(--border);overflow:hidden;margin-bottom:20px;">
+          <div style="height:180px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);display:flex;align-items:center;justify-content:center;font-size:80px;position:relative;">
+            🏍️
+            <div style="position:absolute;top:12px;left:12px;background:rgba(0,0,0,.65);color:white;font-size:10px;font-weight:700;padding:4px 10px;border-radius:var(--r99);">Your Vehicle</div>
+            <div style="position:absolute;top:12px;right:12px;background:var(--green-light);color:var(--green);font-size:10px;font-weight:700;padding:4px 10px;border-radius:var(--r99);">● Active</div>
+          </div>
+          <div style="padding:14px 16px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+              <div style="font-size:17px;font-weight:900;color:var(--text);">Your Bike Model</div>
+              <div style="text-align:right;"><div style="font-size:18px;font-weight:900;color:var(--red);">₹1,500</div><div style="font-size:10px;color:var(--text3);">/day</div></div>
+            </div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:10px;">Brand · 2023 · Classic</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <div style="display:flex;gap:2px;"><span style="color:#F59E0B;font-size:12px;">★★★★★</span></div>
+              <span style="font-size:11px;color:var(--text3);">New listing</span>
+              <div style="margin-left:auto;display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3);">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>Andheri West
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Listing summary -->
+        <div class="booking-card" style="margin:0 0 14px;">
+          <div class="booking-card-header">Listing Summary</div>
+          <div class="booking-row"><span class="b-key">Vehicle type</span><span class="b-val">Bike</span></div>
+          <div class="booking-row"><span class="b-key">Price per day</span><span class="b-val" style="color:var(--red);">₹1,500</span></div>
+          <div class="booking-row"><span class="b-key">Security deposit</span><span class="b-val">₹5,000</span></div>
+          <div class="booking-row"><span class="b-key">Location</span><span class="b-val">Andheri West</span></div>
+          <div class="booking-row"><span class="b-key">Photos</span><span class="b-val" style="color:var(--green);">5 uploaded ✓</span></div>
+          <div class="booking-row"><span class="b-key">Rules set</span><span class="b-val" style="color:var(--green);">3 rules ✓</span></div>
+        </div>
+
+        <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--r12);padding:14px;display:flex;gap:10px;align-items:flex-start;">
+          <span style="font-size:18px;">💡</span>
+          <div style="font-size:12px;color:#92400E;line-height:1.6;">Once published your listing goes live instantly. You can pause or edit it anytime from My Listings in Profile.</div>
+        </div>
+      </div>
+      <div style="padding:16px 20px 28px;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg);">
+        <button class="btn-confirm" style="background:linear-gradient(135deg,var(--red2),var(--red-dark));" onclick="goTo('list-success')">🚀 Publish Listing</button>
+        <div style="text-align:center;font-size:11px;color:var(--text3);margin-top:10px;">You can always edit or pause your listing later</div>
+      </div>
+    </div>
+
+    <!-- LISTING SUCCESS -->
+    <div class="screen" id="list-success" style="flex-direction:column;align-items:center;justify-content:center;padding:30px;">
+      <div class="success-anim" style="background:var(--red-light);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="success-title">You're live! 🎉</div>
+      <div class="success-sub">Your vehicle is now listed on Ride It and open for bookings.</div>
+      <div class="success-card">
+        <div class="s-row"><span class="s-k">Listing ID</span><span class="s-v">#LIST-20491</span></div>
+        <div class="s-row"><span class="s-k">Status</span><span class="s-v" style="color:var(--green);">Active ●</span></div>
+        <div class="s-row"><span class="s-k">Price/day</span><span class="s-v" style="color:var(--red);">₹1,500</span></div>
+        <div class="s-row"><span class="s-k">Location</span><span class="s-v">Andheri West</span></div>
+      </div>
+      <button class="btn-home" onclick="goTo('home')">Back to Home</button>
+    </div>
+
+    <div class="screen" id="confirm">
+      <div class="confirm-header">
+        <div class="back-btn" onclick="goBack()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        </div>
+        <span class="confirm-title">Confirm Booking</span>
+      </div>
+
+      <div class="scroll-body" style="padding-bottom:120px;">
+        <!-- Vehicle summary -->
+        <div class="booking-card">
+          <div class="booking-card-header">Vehicle Details</div>
+          <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);">
+            <div style="width:64px;height:64px;border-radius:var(--r12);background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;">🏍️</div>
+            <div>
+              <div style="font-size:14px;font-weight:800;color:var(--text);">Triumph Speed 400</div>
+              <div style="font-size:11px;color:var(--text3);margin-bottom:6px;">Triumph · 2023 · Classic</div>
+              <div style="display:flex;gap:6px;">
+                <span style="background:var(--green-light);color:var(--green);font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--r99);">● Available</span>
+                <span style="background:#EFF6FF;color:var(--blue);font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--r99);">★ 4.9</span>
+              </div>
+            </div>
+          </div>
+          <div class="booking-row"><span class="b-key">Pick-up date</span><span class="b-val">Mon, 2 June 2025</span></div>
+          <div class="booking-row"><span class="b-key">Return date</span><span class="b-val">Wed, 4 June 2025</span></div>
+          <div class="booking-row"><span class="b-key">Duration</span><span class="b-val">2 days</span></div>
+          <div class="booking-row"><span class="b-key">Location</span><span class="b-val">Andheri West, Mumbai</span></div>
+          <div class="booking-row"><span class="b-key">Distance</span><span class="b-val blue">📍 0.4 km away</span></div>
+        </div>
+
+        <!-- Price breakdown -->
+        <div class="booking-card">
+          <div class="booking-card-header">Price Breakdown</div>
+          <div class="booking-row"><span class="b-key">₹1,500 × 2 days</span><span class="b-val">₹3,000</span></div>
+          <div class="booking-row"><span class="b-key">Insurance</span><span class="b-val">₹200</span></div>
+          <div class="booking-row"><span class="b-key">Service fee</span><span class="b-val">₹150</span></div>
+          <div class="booking-row" style="border-top:2px solid var(--border);">
+            <span class="b-key" style="font-weight:800;color:var(--text);font-size:14px;">Total</span>
+            <span class="b-val" style="font-size:17px;color:var(--red);">₹3,350</span>
+          </div>
+        </div>
+
+        <div class="total-banner">
+          <div>
+            <div class="total-label">Amount Payable</div>
+            <div class="total-sublabel">Incl. all taxes & fees</div>
+          </div>
+          <div class="total-amt">₹3,350</div>
+        </div>
+
+        <div class="pay-method">
+          <div class="pay-icon">💳</div>
+          <div class="pay-info">
+            <div class="pay-name">HDFC Debit •••• 4242</div>
+            <div class="pay-sub">Change payment method</div>
+          </div>
+          <svg class="pay-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+
+        <div class="policy-box">
+          <div class="title">Cancellation Policy</div>
+          <div class="body">Free cancellation up to 24 hours before pick-up. After that, 50% of the rental amount will be charged.</div>
+        </div>
+      </div>
+
+      <div class="confirm-cta">
+        <button class="btn-confirm" onclick="goTo('success')">Confirm & Pay ₹3,350</button>
+        <div class="confirm-note">By confirming you agree to our Terms of Service</div>
+      </div>
+    </div>
+
+    <!-- ══ SUCCESS ══ -->
+    <div class="screen" id="success" style="flex-direction:column;align-items:center;justify-content:center;padding:30px;">
+      <div class="success-anim">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="success-title">You're all set, Rohan! 🎉</div>
+      <div class="success-sub">Your Triumph Speed 400 is booked. Pick it up on Monday, 2 June at Andheri West.</div>
+      <div class="success-card">
+        <div class="s-row"><span class="s-k">Booking ID</span><span class="s-v">#RIIT-80342</span></div>
+        <div class="s-row"><span class="s-k">Vehicle</span><span class="s-v">Triumph Speed 400</span></div>
+        <div class="s-row"><span class="s-k">Pick-up</span><span class="s-v">Mon, 2 June</span></div>
+        <div class="s-row"><span class="s-k">Return</span><span class="s-v">Wed, 4 June</span></div>
+        <div class="s-row"><span class="s-k">Paid</span><span class="s-v" style="color:var(--green);">₹3,350 ✓</span></div>
+      </div>
+      <button class="btn-home" onclick="goTo('home')">Back to Home</button>
+    </div>
+
+    <!-- ══ BOOKINGS ══ -->
+    <div class="screen" id="bookings">
+      <div class="bookings-header">
+        <div class="bookings-title">My Bookings</div>
+        <div class="tab-row">
+          <div class="tab active" onclick="filterBookings(this, 'Upcoming')">Upcoming</div>
+          <div class="tab" onclick="filterBookings(this, 'Active')">Active</div>
+          <div class="tab" onclick="filterBookings(this, 'Past')">Past</div>
+        </div>
+      </div>
+      <div class="scroll-body">
+        <div style="height:10px;"></div>
+        <div class="booking-mini" onclick="goTo('detail')">
+          <div class="bm-img bg-green">🏍️</div>
+          <div class="bm-info">
+            <div class="bm-name">Triumph Speed 400</div>
+            <div class="bm-date">📅 Jun 2 → Jun 4 · 2 days</div>
+          </div>
+          <div style="text-align:right;">
+            <span class="status-pill upcoming">Upcoming</span>
+            <div class="bm-price">₹3,350</div>
+          </div>
+        </div>
+        <div class="booking-mini" onclick="goTo('detail')">
+          <div class="bm-img bg-blue">🚙</div>
+          <div class="bm-info">
+            <div class="bm-name">Mahindra Thar</div>
+            <div class="bm-date">📅 May 20 → May 22 · 2 days</div>
+          </div>
+          <div style="text-align:right;">
+            <span class="status-pill confirmed">Confirmed</span>
+            <div class="bm-price">₹4,998</div>
+          </div>
+        </div>
+        <div style="padding:16px 20px 8px;font-size:13px;font-weight:800;color:var(--text2);">Past Trips</div>
+        <div class="booking-mini" style="opacity:.7;" onclick="goTo('detail')">
+          <div class="bm-img bg-orange">🏎️</div>
+          <div class="bm-info">
+            <div class="bm-name">Skoda Octavia RS</div>
+            <div class="bm-date">📅 May 10 → May 12 · 2 days</div>
+          </div>
+          <div style="text-align:right;">
+            <span class="status-pill confirmed">Confirmed</span>
+            <div class="bm-price">₹8,400</div>
+          </div>
+        </div>
+        <div class="booking-mini" style="opacity:.65;" onclick="goTo('detail')">
+          <div class="bm-img bg-pink">🛵</div>
+          <div class="bm-info">
+            <div class="bm-name">TVS Apache RTR 200</div>
+            <div class="bm-date">📅 Mar 18 → Mar 19 · 1 day</div>
+          </div>
+          <div style="text-align:right;">
+            <span class="status-pill done">Done</span>
+            <div class="bm-price" style="color:var(--text3);">₹700</div>
+          </div>
+        </div>
+        <div style="height:20px;"></div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="goTo('home')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Home</span></div>
+        <div class="nav-item" onclick="goTo('search-screen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+        <div class="nav-center" onclick="goTo('list-vehicle')"><div class="nav-fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span>List Car</span></div>
+        <div class="nav-item active" onclick="goTo('bookings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Bookings</span></div>
+        <div class="nav-item" onclick="goTo('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span></div>
+      </div>
+    </div>
+
+    <!-- ══ PROFILE ══ -->
+    <div class="screen" id="profile">
+      <div class="scroll-body">
+        <div class="profile-hero">
+          <div class="profile-av">
+            R
+            <div class="profile-edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+          </div>
+          <div class="profile-name">Rohan Mehta</div>
+          <div class="profile-email">rohan@rideit.app</div>
+          <div class="verified">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>Verified Host</span>
+          </div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-item"><div class="stat-val">23</div><div class="stat-lbl">Trips</div></div>
+          <div class="stat-item"><div class="stat-val">4.9</div><div class="stat-lbl">Rating</div></div>
+          <div class="stat-item"><div class="stat-val">3</div><div class="stat-lbl">Listed</div></div>
+          <div class="stat-item"><div class="stat-val">₹42k</div><div class="stat-lbl">Earned</div></div>
+        </div>
+
+        
+          <div class="section-label">Account</div>
+        <div class="menu-item" onclick="goTo('profile-personal')">
+          <div class="m-ico red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div class="m-text"><div class="m-label">Personal Info</div><div class="m-sub">Name, email, phone</div></div>
+          <svg class="m-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div class="menu-item" onclick="goTo('profile-payment')">
+          <div class="m-ico blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+          <div class="m-text"><div class="m-label">Payment Methods</div><div class="m-sub">UPI, Cards, Wallet</div></div>
+          <svg class="m-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div class="menu-item" onclick="goTo('profile-verify')">
+          <div class="m-ico green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div>
+          <div class="m-text"><div class="m-label">Verification</div><div class="m-sub">ID, License · 2/3 done</div></div>
+          <div style="width:7px;height:7px;background:var(--yellow);border-radius:50%;margin-right:4px;"></div>
+          <svg class="m-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+
+        <div class="section-label">My Vehicles</div>
+        <div class="menu-item" onclick="goTo('profile-listings')">
+          <div class="m-ico red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/><path d="M1 9l4-4h10l4 4H1z"/><path d="M1 9v5a1 1 0 001 1h1m14 0h2a1 1 0 001-1V9"/></svg></div>
+          <div class="m-text"><div class="m-label">My Listings</div><div class="m-sub">3 vehicles listed</div></div>
+          <svg class="m-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div class="menu-item" onclick="goTo('profile-reviews')">
+          <div class="m-ico yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+          <div class="m-text"><div class="m-label">Reviews</div><div class="m-sub">4.9 avg · 18 reviews</div></div>
+          <svg class="m-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+
+        <div class="section-label">App</div>
+        <div class="menu-item" onclick="goTo('profile-notifications')">
+          <div class="m-ico blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
+          <div class="m-text"><div class="m-label">Notifications</div><div class="m-sub">Push, Email, SMS</div></div>
+          <div class="toggle-sw"></div>
+        </div>
+        <div class="menu-item" style="margin-bottom:30px;" onclick="logout()">
+          <div class="m-ico" style="background:#FEE2E2;"><svg viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
+          <div class="m-text"><div class="m-label" style="color:#EF4444;">Sign Out</div><div class="m-sub" id="profile-signout-email"></div></div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="goTo('home')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Home</span></div>
+        <div class="nav-item" onclick="goTo('search-screen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><span>Search</span></div>
+        <div class="nav-center" onclick="goTo('list-vehicle')"><div class="nav-fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span>List Car</span></div>
+        <div class="nav-item" onclick="goTo('bookings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Bookings</span></div>
+        <div class="nav-item active" onclick="goTo('profile')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>Profile</span></div>
+      </div>
+    </div>
+
+  </div>
+    <!-- PROFILE SCREENS -->
+    <div class="screen" id="profile-personal">
+        <div class="search-screen-header">
+            <div class="search-top-row">
+                <div class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>
+                <div style="font-weight:800;font-size:18px;">Personal Info</div>
+            </div>
+        </div>
+        <div class="scroll-body" style="padding: 20px;">
+            <label style="font-size:12px;color:var(--text3);">Full Name</label>
+            <input type="text" id="pi-name" style="width:100%;padding:12px;margin-bottom:15px;border-radius:10px;border:1px solid var(--border);">
+            <label style="font-size:12px;color:var(--text3);">Email</label>
+            <input type="email" id="pi-email" style="width:100%;padding:12px;margin-bottom:15px;border-radius:10px;border:1px solid var(--border);">
+            <label style="font-size:12px;color:var(--text3);">Phone Number</label>
+            <input type="text" id="pi-phone" style="width:100%;padding:12px;margin-bottom:20px;border-radius:10px;border:1px solid var(--border);">
+            <button onclick="savePersonalInfo()" class="btn-book" style="width:100%;">Save Changes</button>
+        </div>
+    </div>
+
+    <div class="screen" id="profile-payment">
+        <div class="search-screen-header">
+            <div class="search-top-row">
+                <div class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>
+                <div style="font-weight:800;font-size:18px;">Payment Methods</div>
+            </div>
+        </div>
+        <div class="scroll-body" style="padding: 20px;" id="payment-methods-container">
+            <!-- Payment settings logic moved here via JS or replaced -->
+        </div>
+    </div>
+
+    <div class="screen" id="profile-verify">
+        <div class="search-screen-header">
+            <div class="search-top-row">
+                <div class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>
+                <div style="font-weight:800;font-size:18px;">Verification Docs</div>
+            </div>
+        </div>
+        <div class="scroll-body" style="padding: 20px;">
+            <label style="font-size:12px;color:var(--text3);">Government ID</label>
+            <input type="file" id="vf-id" style="width:100%;margin-bottom:15px;padding:10px;">
+            <label style="font-size:12px;color:var(--text3);">Driving License</label>
+            <input type="file" id="vf-license" style="width:100%;margin-bottom:20px;padding:10px;">
+            <button onclick="saveVerification()" class="btn-book" style="width:100%;">Upload Documents</button>
+        </div>
+    </div>
+
+    <div class="screen" id="profile-listings">
+        <div class="search-screen-header">
+            <div class="search-top-row">
+                <div class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>
+                <div style="font-weight:800;font-size:18px;">My Listings</div>
+            </div>
+        </div>
+        <div class="scroll-body" style="padding: 20px;">
+            <div id="my-listings-container" style="display:flex;flex-direction:column;gap:15px;"></div>
+        </div>
+    </div>
+
+    <div class="screen" id="profile-reviews">
+        <div class="search-screen-header">
+            <div class="search-top-row">
+                <div class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>
+                <div style="font-weight:800;font-size:18px;">Reviews</div>
+            </div>
+        </div>
+        <div class="scroll-body" style="padding: 20px;">
+            <div style="text-align:center;padding:50px 0;">
+                <div style="font-size:48px;">⭐</div>
+                <div style="font-size:18px;font-weight:800;">4.9 Average Rating</div>
+                <div style="color:var(--text3);font-size:13px;margin-top:10px;">Your guests love you! No new reviews to show.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen" id="profile-notifications">
+        <div class="search-screen-header">
+            <div class="search-top-row">
+                <div class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>
+                <div style="font-weight:800;font-size:18px;">Notifications</div>
+            </div>
+        </div>
+        <div class="scroll-body" style="padding: 20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid var(--border);">
+                <div><div style="font-weight:700;">Push Notifications</div><div style="font-size:11px;color:var(--text3);">Get alerts on your phone</div></div>
+                <input type="checkbox" id="notif-push" style="width:20px;height:20px;" checked>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid var(--border);">
+                <div><div style="font-weight:700;">Email Alerts</div><div style="font-size:11px;color:var(--text3);">Receive booking confirmations</div></div>
+                <input type="checkbox" id="notif-email" style="width:20px;height:20px;" checked>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid var(--border);">
+                <div><div style="font-weight:700;">SMS Notifications</div><div style="font-size:11px;color:var(--text3);">Get text messages for trips</div></div>
+                <input type="checkbox" id="notif-sms" style="width:20px;height:20px;" checked>
+            </div>
+            <button onclick="saveNotifications()" class="btn-book" style="width:100%;margin-top:20px;">Save Preferences</button>
+        </div>
+    </div>
+
+  </div><!-- phone-screen -->
+</div><!-- android-shell -->
+
+<script>
+const navHistory = [];
+let current = 'splash';
+
+function goTo(id) {
+  const prev = document.getElementById(current);
+  const next = document.getElementById(id);
+  if (!next || id === current) return;
+
+  if (prev) {
+    prev.classList.remove('active');
+    prev.classList.add('slide-back');
+    setTimeout(() => prev.classList.remove('slide-back'), 300);
+  }
+
+  navHistory.push(current);
+  current = id;
+  next.classList.add('active');
+
+  // scroll to top
+  const sb = next.querySelector('.scroll-body');
+  if (sb) sb.scrollTop = 0;
+}
+
+function goBack() {
+  if (navHistory.length === 0) return;
+  const prev = navHistory.pop();
+  const cur = document.getElementById(current);
+  const target = document.getElementById(prev);
+  if (!target) return;
+
+  cur.classList.remove('active');
+  current = prev;
+  target.classList.add('active');
+}
+
+function filterCat(el) {
+  document.querySelectorAll('.cat').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function toggleChip(el) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function switchTab(el) {
+  el.closest('.tab-row').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function selectType(el, type) {
+  document.querySelectorAll('.vtype-opt').forEach(v => v.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function selectSeats(el) {
+  document.querySelectorAll('.seat-opt').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+}
+
+
+async function submitListing() {
+    const file = document.getElementById('list-image').files[0];
+    const name = document.getElementById('list-name').value;
+    const brand = document.getElementById('list-brand').value;
+    const price = document.getElementById('list-price').value;
+    const address = document.getElementById('list-address').value;
+
+    const fd = new FormData();
+    fd.append('user_id', currentUser.id);
+    fd.append('name', name);
+    fd.append('brand', brand);
+    fd.append('price', price);
+    fd.append('address', address);
+    fd.append('type', 'Car');
+    fd.append('location_lat', 19.07 + Math.random()*0.1);
+    fd.append('location_lng', 72.87 + Math.random()*0.1);
+    if(file) fd.append('image', file);
+
+    await fetch('/api/vehicles', { method: 'POST', body: fd });
+    fetchVehicles();
+    goTo('home');
+}
+
+
+async function updateProfile() {
+    const upi = document.getElementById('profile-upi').value;
+    const qrFile = document.getElementById('profile-qr').files[0];
+    
+    const fd = new FormData();
+    fd.append('user_id', currentUser.id);
+    fd.append('upi_id', upi);
+    if(qrFile) fd.append('qr_code', qrFile);
+
+    const res = await fetch('/api/profile/update', { method: 'POST', body: fd });
+    if(res.ok) alert('Profile updated!');
+}
+
+
+function populateProfileForms() {
+    if(!currentUser) return;
+    document.getElementById('pi-name').value = currentUser.name || '';
+    document.getElementById('pi-email').value = currentUser.email || '';
+    document.getElementById('pi-phone').value = currentUser.phone || '';
+    
+    document.getElementById('notif-push').checked = currentUser.notif_push !== 0;
+    document.getElementById('notif-email').checked = currentUser.notif_email !== 0;
+    document.getElementById('notif-sms').checked = currentUser.notif_sms !== 0;
+    
+    // Inject payment settings into payment screen
+    document.getElementById('payment-methods-container').innerHTML = `
+        <div class="sec-title2">Setup UPI & QR</div>
+        <input type="text" id="profile-upi" placeholder="UPI ID" value="${currentUser.upi_id || ''}" style="padding:10px;width:100%;margin-bottom:10px;border-radius:8px;border:1px solid var(--border);">
+        <label style="font-size:12px;color:var(--text3);">Upload QR Code</label>
+        <input type="file" id="profile-qr" accept="image/*" style="margin-bottom:20px;width:100%;">
+        ${currentUser.qr_code ? '<div style="margin-bottom:10px;font-size:12px;color:green;">✅ QR code is uploaded</div>' : ''}
+        <button onclick="updateProfile()" class="btn-book" style="width:100%;">Save Payment Methods</button>
+    `;
+}
+
+async function savePersonalInfo() {
+    const name = document.getElementById('pi-name').value;
+    const email = document.getElementById('pi-email').value;
+    const phone = document.getElementById('pi-phone').value;
+    const res = await fetch('/api/profile/personal', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({user_id: currentUser.id, name, email, phone})
+    });
+    if(res.ok) {
+        currentUser.name = name; currentUser.email = email; currentUser.phone = phone;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        initApp();
+        alert('Personal Info saved!');
+        goBack();
+    }
+}
+
+async function saveVerification() {
+    const idFile = document.getElementById('vf-id').files[0];
+    const licenseFile = document.getElementById('vf-license').files[0];
+    const fd = new FormData();
+    fd.append('user_id', currentUser.id);
+    if(idFile) fd.append('id_doc', idFile);
+    if(licenseFile) fd.append('license_doc', licenseFile);
+    
+    const res = await fetch('/api/profile/verify', { method: 'POST', body: fd });
+    if(res.ok) {
+        const data = await res.json();
+        if(data.id_url) currentUser.id_url = data.id_url;
+        if(data.license_url) currentUser.license_url = data.license_url;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        alert('Documents uploaded successfully!');
+        goBack();
+    }
+}
+
+async function saveNotifications() {
+    const push = document.getElementById('notif-push').checked ? 1 : 0;
+    const email = document.getElementById('notif-email').checked ? 1 : 0;
+    const sms = document.getElementById('notif-sms').checked ? 1 : 0;
+    const res = await fetch('/api/profile/notifications', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({user_id: currentUser.id, notif_push: push, notif_email: email, notif_sms: sms})
+    });
+    if(res.ok) {
+        currentUser.notif_push = push; currentUser.notif_email = email; currentUser.notif_sms = sms;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        alert('Notifications updated!');
+        goBack();
+    }
+}
+
+// Override initApp to populate profile forms
+const origInitApp = initApp;
+initApp = function() {
+    origInitApp();
+    populateProfileForms();
+    renderMyListings();
+};
+
+async function renderMyListings() {
+    const res = await fetch('/api/vehicles');
+    if(!res.ok) return;
+    const allVehicles = await res.json();
+    const myVehicles = allVehicles.filter(v => v.user_id === currentUser.id);
+    const container = document.getElementById('my-listings-container');
+    
+    if(myVehicles.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:var(--text3);padding:30px;">No vehicles listed yet.</div>';
+        return;
+    }
+    
+    container.innerHTML = '';
+    myVehicles.forEach(v => {
+        container.innerHTML += `
+            <div style="display:flex;gap:12px;background:var(--surface);padding:10px;border-radius:12px;border:1px solid var(--border);">
+                <img src="${v.image_url}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;">
+                <div style="flex:1;">
+                    <div style="font-weight:800;font-size:15px;">${v.name}</div>
+                    <div style="font-size:11px;color:var(--text3);">${v.brand}</div>
+                    <div style="margin-top:10px;font-weight:700;color:var(--red);">₹${v.price}/day</div>
+                </div>
+            </div>
+        `;
+    });
+}
+
+// Auto-advance splash
+
+setTimeout(() => {
+    if (currentUser) {
+        initApp();
+        goTo('home');
+    } else {
+        goTo('auth');
+    }
+}, 2000);
+
+
+let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+
+async function doLogin() {
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email, password})
+    });
+    if (res.ok) {
+        currentUser = await res.json();
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        initApp();
+        goTo('home');
+    } else {
+        alert('Login failed');
+    }
+}
+
+async function doRegister() {
+    const name = document.getElementById('reg-name').value;
+    const email = document.getElementById('reg-email').value;
+    const password = document.getElementById('reg-password').value;
+    const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name, email, password})
+    });
+    if (res.ok) {
+        currentUser = await res.json();
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        initApp();
+        goTo('home');
+    } else {
+        alert('Registration failed');
+    }
+}
+
+function logout() {
+    localStorage.removeItem('currentUser');
+    currentUser = null;
+    goTo('auth');
+}
+
+function initApp() {
+    if(currentUser) {
+        document.querySelector('.greeting h2 em').innerText = currentUser.name.split(' ')[0] + '?';
+        document.querySelector('.profile-name').innerText = currentUser.name;
+        document.querySelector('.profile-email').innerText = currentUser.email;
+        const signoutEl = document.getElementById('profile-signout-email');
+        if (signoutEl) signoutEl.innerText = currentUser.email;
+        fetchVehicles();
+        fetchBookings();
+    }
+}
+
+async function fetchVehicles() {
+    const res = await fetch('/api/vehicles');
+    if(res.ok) {
+        const vehicles = await res.json();
+        renderVehicles(vehicles);
+        renderMap(vehicles);
+    }
+}
+
+function renderVehicles(vehicles) {
+    const container = document.querySelector('.h-scroll');
+    if(vehicles.length === 0) return;
+    container.innerHTML = '';
+    vehicles.forEach(v => {
+        const card = document.createElement('div');
+        card.className = 'v-card';
+        card.innerHTML = `
+            <div class="v-img">
+                <img src="${v.image_url}" style="width:100%;height:100%;object-fit:cover;">
+                <div class="v-tag">${v.type}</div>
+            </div>
+            <div class="v-body">
+                <div class="v-name">${v.name}</div>
+                <div class="v-brand">${v.brand}</div>
+                <div class="v-footer">
+                    <div class="v-price"><span class="amt">₹${v.price}</span><span class="per">/day</span></div>
+                </div>
+            </div>
+        `;
+        card.onclick = () => showVehicleDetail(v);
+        container.appendChild(card);
+    });
+}
+
+function showVehicleDetail(v) {
+    // Generate detail screen dynamically
+    let screen = document.getElementById('detail-dynamic');
+    if(!screen) {
+        screen = document.createElement('div');
+        screen.className = 'screen';
+        screen.id = 'detail-dynamic';
+        document.querySelector('.phone-screen').appendChild(screen);
+    }
+    
+    screen.innerHTML = `
+      <div class="status-bar" style="position:absolute;top:0;left:0;right:0;background:transparent;z-index:20;">
+        <span style="color:rgba(0,0,0,.6);font-weight:700;">9:41</span>
+      </div>
+      <div class="scroll-body">
+        <div class="detail-hero" style="background-image:url('${v.image_url}'); background-size:cover; background-position:center;">
+          <div class="detail-back" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>
+          <div class="detail-tag-wrap"><div class="d-tag dark">${v.type}</div></div>
+        </div>
+        <div class="detail-body">
+          <div class="d-title-row"><div class="d-title">${v.name}</div><div class="d-price-box"><div class="d-price-amt">₹${v.price}</div><div class="d-price-per">/day</div></div></div>
+          <div class="d-subtitle">${v.brand} · ${v.address}</div>
+          
+          <div class="sec-title2">Select Dates</div>
+          <div class="date-picker">
+            <div class="date-box active"><label>Pick-up</label><input type="date" id="book-start" style="width:100%;border:none;background:transparent;outline:none;"></div>
+            <div class="date-box"><label>Return</label><input type="date" id="book-end" style="width:100%;border:none;background:transparent;outline:none;"></div>
+          </div>
+          
+          <div class="sec-title2">Hosted by</div>
+          <div class="host-row">
+            <div class="host-av">${v.host_name[0]}</div>
+            <div class="host-info"><div class="host-name">${v.host_name}</div></div>
+            ${v.upi_id ? `<div class="host-badge">UPI: ${v.upi_id}</div>` : ''}
+            ${v.qr_code ? `<img src="${v.qr_code}" style="width:40px;height:40px;margin-left:10px;">` : ''}
+          </div>
+        </div>
+      </div>
+      <div class="detail-cta">
+        <button class="btn-book" onclick="bookVehicle(${v.id}, ${v.price})">Book Now & Pay →</button>
+      </div>
+    `;
+    goTo('detail-dynamic');
+}
+
+async function bookVehicle(vid, price) {
+    const start = document.getElementById('book-start').value || new Date().toISOString().split('T')[0];
+    const end = document.getElementById('book-end').value || new Date().toISOString().split('T')[0];
+    const days = Math.max(1, (new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24));
+    const total = price * days;
+
+    const rzpOrderRes = await fetch('/api/create-order', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({amount: total})
+    });
+    const order = await rzpOrderRes.json();
+
+    const options = {
+        "key": "rzp_test_123", // Replace with real key
+        "amount": order.amount,
+        "currency": "INR",
+        "name": "Ride It",
+        "description": "Vehicle Booking",
+        "order_id": order.id,
+        "handler": async function (response){
+            await fetch('/api/bookings', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    vehicle_id: vid,
+                    user_id: currentUser.id,
+                    start_date: start,
+                    end_date: end,
+                    total_price: total,
+                    payment_status: 'Paid',
+                    rzp_order_id: response.razorpay_order_id,
+                    rzp_payment_id: response.razorpay_payment_id
+                })
+            });
+            goTo('success');
+            fetchBookings();
+        },
+        "prefill": {
+            "name": currentUser.name,
+            "email": currentUser.email
+        },
+        "theme": {
+            "color": "#E8251A"
+        }
+    };
+    const rzp1 = new Razorpay(options);
+    rzp1.open();
+}
+
+let allBookings = [];
+let currentBookingTab = 'Upcoming';
+
+async function fetchBookings() {
+    if(!currentUser) return;
+    const res = await fetch('/api/bookings/' + currentUser.id);
+    if(res.ok) {
+        allBookings = await res.json();
+        renderBookings();
+    }
+}
+
+function filterBookings(tabElement, tabName) {
+    document.querySelectorAll('#bookings .tab').forEach(t => t.classList.remove('active'));
+    tabElement.classList.add('active');
+    currentBookingTab = tabName;
+    renderBookings();
+}
+
+function renderBookings() {
+    const container = document.querySelector('#bookings .scroll-body');
+    const now = new Date();
+    // Normalize now to midnight for fair comparison with YYYY-MM-DD
+    now.setHours(0,0,0,0);
+    
+    let filtered = allBookings.filter(b => {
+        const start = new Date(b.start_date);
+        const end = new Date(b.end_date);
+        if(currentBookingTab === 'Upcoming') return start > now;
+        if(currentBookingTab === 'Active') return start <= now && end >= now;
+        if(currentBookingTab === 'Past') return end < now;
+        return true;
+    });
+
+    if(filtered.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3);">No ' + currentBookingTab.toLowerCase() + ' bookings.</div>';
+        return;
+    }
+
+    let html = '<div style="height:10px;"></div>';
+    filtered.forEach(b => {
+        let statusClass = 'upcoming';
+        if(currentBookingTab === 'Active') statusClass = 'confirmed';
+        if(currentBookingTab === 'Past') statusClass = 'done';
+        
+        let cancelBtn = '';
+        if(currentBookingTab === 'Upcoming') {
+            cancelBtn = `<button onclick="cancelBooking(event, ${b.id})" style="margin-top:8px;padding:4px 10px;background:var(--red);color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;">Cancel Booking</button>`;
+        }
+        
+        html += `
+        <div class="booking-mini" onclick="alert('Booking Details:\\n\\nVehicle: ${b.name}\\nDates: ${b.start_date} to ${b.end_date}\\nTotal Paid: ₹${b.total_price}\\nOrder ID: ${b.rzp_order_id}')">
+          <div class="bm-img">
+            <img src="${b.image_url}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">
+          </div>
+          <div class="bm-info">
+            <div class="bm-name">${b.name}</div>
+            <div class="bm-date">📅 ${b.start_date} → ${b.end_date}</div>
+            ${cancelBtn}
+          </div>
+          <div style="text-align:right;">
+            <span class="status-pill ${statusClass}">${currentBookingTab}</span>
+            <div class="bm-price">₹${b.total_price}</div>
+          </div>
+        </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+async function cancelBooking(e, id) {
+    e.stopPropagation(); // Prevent the row click alert
+    if(confirm('Are you sure you want to cancel this booking? A full refund will be initiated.')) {
+        const res = await fetch('/api/bookings/' + id, { method: 'DELETE' });
+        if(res.ok) {
+            alert('Booking cancelled successfully.');
+            fetchBookings(); // Refresh the list
+        } else {
+            alert('Failed to cancel booking.');
+        }
+    }
+}
+
+let map;
+let myLocMarker;
+
+function renderMap(vehicles) {
+    const mapArea = document.querySelector('.map-area');
+    mapArea.style.height = '350px'; // Make map bigger for search
+    mapArea.innerHTML = '<div id="map" style="width:100%;height:100%;"></div>';
+    map = L.map('map').setView([19.0760, 72.8777], 11); // Default to Mumbai
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    vehicles.forEach(v => {
+        if(v.location_lat && v.location_lng) {
+            L.marker([v.location_lat, v.location_lng]).addTo(map)
+                .bindPopup(v.name + ' - ₹' + v.price);
+        }
+    });
+
+    // Automatically locate user on map load
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            map.setView([lat, lon], 13);
+            if(myLocMarker) map.removeLayer(myLocMarker);
+            myLocMarker = L.marker([lat, lon], {icon: L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                iconSize: [25, 41], iconAnchor: [12, 41]
+            })}).addTo(map).bindPopup('You are here!').openPopup();
+        }, () => {
+            // Silently fail if they block location, keep default view
+        });
+    }
+}
+
+async function handleMapSearch(e) {
+    if (e.key === 'Enter') {
+        const query = document.getElementById('map-search-input').value;
+        if(!query) return;
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        if(data && data.length > 0) {
+            const lat = parseFloat(data[0].lat);
+            const lon = parseFloat(data[0].lon);
+            map.setView([lat, lon], 14);
+            if(myLocMarker) map.removeLayer(myLocMarker);
+            myLocMarker = L.marker([lat, lon], {icon: L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                iconSize: [25, 41], iconAnchor: [12, 41]
+            })}).addTo(map).bindPopup('Searched Location').openPopup();
+        } else {
+            alert('Location not found!');
+        }
+    }
+}
+
+function locateMe() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            map.setView([lat, lon], 14);
+            if(myLocMarker) map.removeLayer(myLocMarker);
+            myLocMarker = L.marker([lat, lon], {icon: L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                iconSize: [25, 41], iconAnchor: [12, 41]
+            })}).addTo(map).bindPopup('You are here!').openPopup();
+            document.getElementById('map-search-input').value = 'Current Location';
+        }, (err) => {
+            alert('Unable to retrieve your location. Please check your browser permissions.');
+        });
+    } else {
+        alert('Geolocation is not supported by this browser.');
+    }
+}
+
+async function submitVehicle() {
+    if(!currentUser) { alert('Please log in first!'); return; }
+    
+    const btn = document.querySelector('#list-vehicle button.btn-book');
+    if (btn) {
+        btn.innerText = 'Uploading... Please wait.';
+        btn.disabled = true;
+    }
+
+    try {
+        const fd = new FormData();
+        fd.append('user_id', currentUser.id);
+        fd.append('name', document.getElementById('v-name').value);
+        fd.append('brand', document.getElementById('v-brand').value);
+        fd.append('price', document.getElementById('v-price').value);
+        fd.append('type', document.getElementById('v-type').value);
+        
+        fd.append('owner_name', document.getElementById('v-owner').value);
+        fd.append('dob', document.getElementById('v-dob').value);
+        fd.append('phone', document.getElementById('v-phone').value);
+
+        fd.append('address', document.getElementById('v-address').value);
+        fd.append('location_lat', document.getElementById('v-lat').value);
+        fd.append('location_lng', document.getElementById('v-lng').value);
+
+        const img = document.getElementById('v-image').files[0];
+        if(img) fd.append('image', img);
+        const aadhar = document.getElementById('v-aadhar').files[0];
+        if(aadhar) fd.append('aadhar', aadhar);
+        const license = document.getElementById('v-license').files[0];
+        if(license) fd.append('license', license);
+        const rc = document.getElementById('v-rc').files[0];
+        if(rc) fd.append('rc', rc);
+        const insurance = document.getElementById('v-insurance').files[0];
+        if(insurance) fd.append('insurance', insurance);
+
+        const res = await fetch('/api/vehicles', { method: 'POST', body: fd });
+        if(res.ok) {
+            alert('Vehicle successfully listed and all documents securely uploaded!');
+            fetchVehicles();
+            goTo('home');
+        } else {
+            const text = await res.text();
+            alert('Error: ' + text);
+        }
+    } catch(e) {
+        alert('An error occurred: ' + e.message);
+    } finally {
+        if (btn) {
+            btn.innerText = 'Upload & List Vehicle';
+            btn.disabled = false;
+        }
+    }
+}
+
+function getListingLocation() {
+    if (navigator.geolocation) {
+        document.getElementById('v-lat').value = 'Locating...';
+        document.getElementById('v-lng').value = 'Locating...';
+        navigator.geolocation.getCurrentPosition((pos) => {
+            document.getElementById('v-lat').value = pos.coords.latitude;
+            document.getElementById('v-lng').value = pos.coords.longitude;
+            
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`)
+                .then(r => r.json())
+                .then(data => {
+                    if(data.display_name) document.getElementById('v-address').value = data.display_name;
+                });
+        }, (err) => {
+            alert('Unable to retrieve location. Please ensure location services are enabled.');
+            document.getElementById('v-lat').value = '';
+            document.getElementById('v-lng').value = '';
+        });
+    } else {
+        alert('Geolocation not supported.');
+    }
+}
+</script>
+</body>
+</html>
