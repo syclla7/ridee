@@ -63,6 +63,13 @@ db.serialize(() => {
         location_lng REAL,
         address TEXT,
         image_url TEXT,
+        phone TEXT,
+        owner_name TEXT,
+        dob TEXT,
+        aadhar_url TEXT,
+        license_url TEXT,
+        insurance_url TEXT,
+        rc_url TEXT,
         FOREIGN KEY (user_id) REFERENCES users(id)
     )`);
 
