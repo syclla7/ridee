@@ -2421,10 +2421,10 @@ function showVehicleDetail(v) {
           <div class="d-title-row"><div class="d-title">${v.name}</div><div class="d-price-box"><div class="d-price-amt">₹${v.price}</div><div class="d-price-per">/day</div></div></div>
           <div class="d-subtitle">${v.brand} · ${v.address}</div>
           
-          <div class="sec-title2">Select Dates</div>
+          <div class="sec-title2">Select Dates & Time</div>
           <div class="date-picker">
-            <div class="date-box active"><label>Pick-up</label><input type="date" id="book-start" style="width:100%;border:none;background:transparent;outline:none;"></div>
-            <div class="date-box"><label>Return</label><input type="date" id="book-end" style="width:100%;border:none;background:transparent;outline:none;"></div>
+            <div class="date-box active"><label>Pick-up</label><input type="datetime-local" id="book-start" style="width:100%;border:none;background:transparent;outline:none;"></div>
+            <div class="date-box"><label>Return</label><input type="datetime-local" id="book-end" style="width:100%;border:none;background:transparent;outline:none;"></div>
           </div>
           
           <div class="sec-title2">Hosted by</div>
@@ -2444,9 +2444,14 @@ function showVehicleDetail(v) {
 }
 
 async function bookVehicle(vid, price) {
-    const start = document.getElementById('book-start').value || new Date().toISOString().split('T')[0];
-    const end = document.getElementById('book-end').value || new Date().toISOString().split('T')[0];
-    const days = Math.max(1, (new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24));
+    // Slice to 16 gets YYYY-MM-DDThh:mm format
+    const fallbackStart = new Date().toISOString().slice(0, 16);
+    const start = document.getElementById('book-start').value || fallbackStart;
+    const end = document.getElementById('book-end').value || fallbackStart;
+    
+    // Calculate difference in days (rounding up to charge full days for partial days)
+    const daysDiff = (new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24);
+    const days = Math.max(1, Math.ceil(daysDiff));
     const total = price * days;
 
     const rzpOrderRes = await fetch('/api/create-order', {
@@ -2544,13 +2549,13 @@ function renderBookings() {
         }
         
         html += `
-        <div class="booking-mini" onclick="alert('Booking Details:\\n\\nVehicle: ${b.name}\\nDates: ${b.start_date} to ${b.end_date}\\nTotal Paid: ₹${b.total_price}\\nOrder ID: ${b.rzp_order_id}')">
+        <div class="booking-mini" onclick="alert('Booking Details:\\n\\nVehicle: ${b.name}\\nDates: ${b.start_date.replace('T', ' ')} to ${b.end_date.replace('T', ' ')}\\nTotal Paid: ₹${b.total_price}\\nOrder ID: ${b.rzp_order_id}')">
           <div class="bm-img">
             <img src="${b.image_url}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">
           </div>
           <div class="bm-info">
             <div class="bm-name">${b.name}</div>
-            <div class="bm-date">📅 ${b.start_date} → ${b.end_date}</div>
+            <div class="bm-date">📅 ${b.start_date.replace('T', ' ')} → ${b.end_date.replace('T', ' ')}</div>
             ${cancelBtn}
           </div>
           <div style="text-align:right;">
